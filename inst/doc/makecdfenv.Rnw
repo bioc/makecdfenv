@@ -19,7 +19,7 @@
 
 \newcommand{\scscst}{\scriptscriptstyle}
 \newcommand{\scst}{\scriptstyle}
-\author{Rafael Irizarry}
+\author{Rafael Irizarry, with some contributions from Wolfgang Huber}
 \begin{document}
 \title{Textual description of makecdfenv}
 
