@@ -59,24 +59,33 @@
 }
 
 \details{
-   The necessity for \code{level} vectors associated with most of the
- matrices arose from the following considerations. The name associated
+  The class \code{Cdf} was designed to store the content of Affymetrix's
+  Chip Definition Files (CDF). This early class is no longer widely used
+  in the package affy. Environments (called \code{cdfenvs}) are
+  preferred to have an efficient mapping between probe set identifiers
+  and indexes (needed to access/subset particular probe intensities).
+  Unless one needs to access every information contained in a
+  CDF file, the \code{cdfenvs} will be preferred.
+
+  The following comments are only relevant to someone with interest in
+  what is in a CDF file.
+ The name associated
  to each probe is not unique, it corresponds to the gene name. It is
  very common to have a name repeated 40 times (20 perfect matches and 20
- mismatches). Using \code{factor} objects allows to save memory, but we
- also want to conserve the matrix structure. This was done by using of
- the actual implementation of \code{factor} objects: each level is
- encoded with an integer. Probes can be grouped by pairs: a perfect
+ mismatches). Probes can be grouped by pairs: a perfect
  match (PM) probe has its mismatch (MM) counterpart. The two probes in a
  pair differ by one base (usually located in the middle of the
  sequence). The information relative to this particular base are stored
  in \code{pbase} and \code{tbase}. At a given position (x,y), having
  pbase[x,y] == tbase[x,y] means having a MM while having pbase[x,y] !=
  tbase[x,y] means having a perfect mismatch if and only if one of the
- bases is  A while the other is TRUE, or one is G and the other is C. The
+ bases is A while the other is TRUE, or one is G and the other is C. The
  function 
  \code{\link{pmormm}} returns \code{TRUE} for PMs and \code{FALSE} for
  MMs.
+
+ To know more about the file structure of a CDF file, one has to refer
+ to the parsing code (mostly in C).
 }
 \seealso{
 \code{\link{read.cdffile}},
