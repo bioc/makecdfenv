@@ -73,8 +73,8 @@ make.cdf.env <- function(filename,
   multiassign(names(tmp),tmp, env)
 
   syms = list(
-    XY2I  = paste("y*", sizex, "+x+1", sep=""),
-    I2XY  = paste("r=cbind((i-1)%%",sizex,",(i-1)%/%",sizex,"); colnames(r)=c('x','y'); return(r)", sep=""),
+    I2XY  = paste("y*", sizex, "+x+1", sep=""),
+    XY2I  = paste("r=cbind((i-1)%%",sizex,",(i-1)%/%",sizex,"); colnames(r)=c('x','y'); return(r)", sep=""),
     SIZEX = paste(sizex),
     SIZEY = paste(sizey),
     SIZEI = paste(sizex*sizey))
