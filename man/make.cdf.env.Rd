@@ -55,7 +55,7 @@ make.cdf.env(filename,
 \author{Rafael A. Irizarry, Wolfgang Huber}
 \examples{
   env <- make.cdf.env("Hu6800.CDF.gz",
-           cdf.path=file.path(.path.package("makecdfenv"), "data"),
+           cdf.path=system.file("extdata", package="makecdfenv"),
            compress=TRUE)
   length(ls(env))
   get("U53347_at", env)	   

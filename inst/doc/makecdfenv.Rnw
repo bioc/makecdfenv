@@ -63,7 +63,7 @@ options.
 
 Now, open a terminal with an operating system shell, and write
 \begin{Sinput}
-$ R CMD INSTALL eggplantgenomecdf
+> R CMD INSTALL eggplantgenomecdf
 \end{Sinput}
 This will install the package into your R. You are now ready to use the
 affy package to process eggplant genechips.

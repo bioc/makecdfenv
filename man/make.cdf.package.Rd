@@ -58,7 +58,7 @@ If success, the function returns the name of the created package.
 \examples{
   pkgpath <- tempdir()
   make.cdf.package("Hu6800.CDF.gz",
-           cdf.path=file.path(.path.package("makecdfenv"), "data"),
+           cdf.path=system.file("extdata", package="makecdfenv"),
            compress=TRUE,
 	   package.path = pkgpath)
   dir(pkgpath)	   
