@@ -57,6 +57,6 @@ make.cdf.env(filename,
            cdf.path=file.path(.path.package("makecdfenv"), "data"),
            compress=TRUE)
   length(ls(env))
-  get("", env)	   
+  get("U53347_at", env)	   
 }
 \keyword{manip}

@@ -56,12 +56,12 @@ If success, the function returns the name of the created package.
 \seealso{\code{\link{make.cdf.env}}}
 \author{Rafael A. Irizarry, Wolfgang Huber}
 \example{
-  ## Presently, the example is commented out since including
-  ## the file HG_U95Av2.CDF would add another 5-30 MB to the package.
-  ## If you have an example CDF file that is small enough to be
-  ## included, please let me know - wh
-   
-  ## make.cdf.package("HG_U95Av2.CDF")
+  pkgpath <- tempdir()
+  make.cdf.package("Hu6800.CDF.gz",
+           cdf.path=file.path(.path.package("makecdfenv"), "data"),
+           compress=TRUE,
+	   package.path = pkgpath)
+  dir(pkgpath)	   
 }
 
 \keyword{manip}
