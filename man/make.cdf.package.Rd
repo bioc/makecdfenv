@@ -19,7 +19,7 @@ make.cdf.package(filename,
 \arguments{
   \item{filename}{A character containing the filename of the CDF file -
     \bold{without} the path prefix!}
-  \item{packagename}{A character containg the name wanted for the package.}
+  \item{packagename}{A character containing the name wanted for the package.}
   \item{cdf.path}{A character with the path to the CDF file.}
   \item{package.path}{A character with the path where the package will be created.}
   \item{author}{A character denoting what to put in the author field.}

@@ -10,6 +10,10 @@
 \usepackage{hyperref}
 \usepackage[authoryear,round]{natbib}
 
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+
 \textwidth=6.2in
 \textheight=8.5in
 %\parskip=.3cm
@@ -27,10 +31,10 @@
 \tableofcontents
 
 \section{Introduction}
-The \verb+makecdfenv+ package is part of the
+The \Rpackage{makecdfenv} package is part of the
 Bioconductor\footnote{\url{http://www.bioconductor.org/}} project. It
 can be used to create cdf environments from Affymetrix chip
-description files to be used with the package \verb+affy+.
+description files to be used with the package \Rpackage{affy}.
 
 For many {\it CDF} files a pre-assembled package is available from
 \url{http://www.bioconductor.org/data/cdfenvs/cdfenvs.html}. The
@@ -42,47 +46,47 @@ are generally available on most Unix platforms. Under MS-Windows, if
 you use the precompiled binary distribution of R from CRAN, you will
 need to install some extra tools, like the {\em source package
 installation files} and {\em Perl}. If you think this is too
-complicated, you can contribute the package to Bioconductor 
-and we will create a windows binary for you. Alternatively, 
+complicated, you can contribute the package to Bioconductor
+and we will create a windows binary for you. Alternatively,
 you may skip this section and proceed to
 section~\ref{sec:make.cdf.env}
 
-Let's say your CDF file is called \verb+eggplantgenome.cdf+ and
+Let's say your CDF file is called \Robject{eggplantgenome.cdf} and
 is in your working directory. To make a package, simply write
 \begin{Sinput}
 R> make.cdf.package("eggplantgenome.cdf")
 \end{Sinput}
-This will create a subdirectory \verb+eggplantgenomecdf+ in your
+This will create a subdirectory \Robject{eggplantgenomecdf} in your
 working directory, which contains the package.  Please consult the
-help page for \verb+make.cdf.package+ to find out about further
+help page for \Rfunction{make.cdf.package} to find out about further
 options.
 
 Now, open a terminal with an operating system shell, and write
 \begin{Sinput}
-$ R CMD INSTALL eggplantgenomecdf   
+$ R CMD INSTALL eggplantgenomecdf
 \end{Sinput}
-This will install the package into your R. You are now ready to use the 
+This will install the package into your R. You are now ready to use the
 affy package to process eggplant genechips.
 
 \section{Creating CDF environments}
 \label{sec:make.cdf.env}
 If you do not choose to use the package creation mechanism, you can
-still produce a data structure (in R lingo, it is called 
+still produce a data structure (in R lingo, it is called
 {\it environment}) that can be used by the affy package.
-Let's say your CDF file is called \verb+eggplantgenome.cdf+ and  
+Let's say your CDF file is called \Robject{eggplantgenome.cdf} and
 is in your working directory. Simply write
 \begin{Sinput}
 R> eggplantcdf = make.cdf.env("eggplantgenome.cdf")
-\end{Sinput} 
-Please consult the help page for \verb+make.cdf.env+ to find out 
+\end{Sinput}
+Please consult the help page for \Rfunction{make.cdf.env} to find out
 about further options.
 
 \section{Naming of CDF packages and environments}
-What should you call your package or environment? 
+What should you call your package or environment?
 
-\verb+make.cdf.package+ chooses a default name by stripping all
+\Rfunction{make.cdf.package} chooses a default name by stripping all
 non-letters and non-numbers from the CDF file name, and converting
-everything to lower case. In many cases, this will work. 
+everything to lower case. In many cases, this will work.
 
 You can obtain the CDF name that is associated with a CEL file through
 \begin{Sinput}
@@ -94,15 +98,15 @@ R> make.cdf.package("eggplantgenome.cdf", packagename=pname)
 \end{Sinput}
 Similarly, if you work with the environments directly (as
 described in section~\ref{sec:make.cdf.env}) simply replace the word
-\verb+eggplantcdf+ with what ever the value of \verb+pname+ is.
+\Robject{eggplantcdf} with what ever the value of \Robject{pname} is.
 
-In instances of \verb+AffyBatch+, the \verb+cdfName+ slot gives the name
+In instances of \Robject{AffyBatch}, the \Robject{cdfName} slot gives the name
 of the appropriate CDF file for the arrays that are represented in the
-\verb+intensity+ slot.  
-The functions \verb+read.celfile+,
-\verb+read.affybatch+, and \verb+ReadAffy+ extract the CDF
+\Robject{intensity} slot.
+The functions \Rfunction{read.celfile},
+\Rfunction{read.affybatch}, and \Rfunction{ReadAffy} extract the CDF
 filename from the CEL files that they read. The function
-\verb+cleancdfname+ converts Affymetrix' CDF name to the name  
+\Rfunction{cleancdfname} converts Affymetrix' CDF name to the name
 that is used in Bioconductor. Here are two examples:
 <<echo=F,results=hide>>=
 library(affy)
@@ -110,11 +114,11 @@ library(affy)
 <<>>=
 cat("HG_U95Av2 is",cleancdfname("HG_U95Av2"),"\n")
 cat("HG-133A is",cleancdfname("HG-133A"),"\n")
-@ 
-The method \verb+getCdfInfo+ takes as an argument an \verb+AffyBatch+
-and returns the appropriate environment.  If \verb+x+ is an
-\verb+AffyBatch+, this function will look for an environment with name
-\verb+cleancdfname(x@cdfName)+.  
+@
+The method \Rfunction{getCdfInfo} takes as an argument \Robject{AffyBatch}
+and returns the appropriate environment.  If \Robject{x} is an
+\Robject{AffyBatch}, this function will look for an environment with name
+\Robject{cleancdfname(x@cdfName)}.
 
 \section{Location-ProbeSet Mapping}
 \label{sec:probesloc}
@@ -125,19 +129,19 @@ coordinates) an intensity.  The {\it CEL} file also contains the name
 of the {\it CDF} file needed for the location-probe-set mapping. The
 {\it CDF} files store the name of the probe set related to each
 location on the array.  We store this mapping information in {\it R}
-environments, such as the ones produced by \verb+make.cdf.env+ or
-contained in the packages made by \verb+make.cdf.package+.
+environments, such as the ones produced by \Rfunction{make.cdf.env} or
+contained in the packages made by \Rfunction{make.cdf.package}.
 
-In \verb+affy+, the $x$ and $y$ coordinates are internally stored as
+In \Rpackage{affy}, the $x$ and $y$ coordinates are internally stored as
 one number $i$. The mapping between $(x,y)$ and $i$ is provided by the
-functions \verb+i2xy(i)+ and \verb+xy2i+ that are contained in each
+functions \Rfunction{i2xy(i)} and \Rfunction{xy2i} that are contained in each
 CDF package. They are very simple:
-\begin{eqnarray*}  
+\begin{eqnarray*}
   i &=& y  s_x + x + 1\\
   x &=& i\,\%\%\,  s_x - 1\\
   y &=& i\,\%/\%\, s_x,
 \end{eqnarray*}
-where $s_x$ is the side length of the chip (measured in number of 
+where $s_x$ is the side length of the chip (measured in number of
 probes) in $x$-direction.
 
 

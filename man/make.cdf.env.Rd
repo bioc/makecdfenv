@@ -3,7 +3,7 @@
 \title{CDF Environment Maker}
 \description{
 Reads in an Affymetrix chip description file (CDF) and creates an
-an environment used as a hash table for the probe set mapping to
+environment used as a hash table for the probe set mapping to 
 location.}
 \usage{make.cdf.env(filename, cdf.path = getwd(), return.env.only = TRUE,
              verbose = TRUE)}
@@ -24,7 +24,7 @@ location.}
   \code{env} and \code{syms}. See details.}
 
 \details{Normally, this function should not be called directly. The
-  prefered way to handle CDF information is to use
+  preferred way to handle CDF information is to use
   \code{\link{make.cdf.package}} to build a package, and to
   install it into R. The CDF information can then either be invoked
   automatically by the package \code{affy}, or can be loaded manually by
