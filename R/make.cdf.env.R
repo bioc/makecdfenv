@@ -99,7 +99,7 @@ make.cdf.package<- function(filename,
                             compress = FALSE,
                             author = "The Bioconductor Project",
                             maintainer = "The Bioconductor Project <bioconductor@stat.math.ethz.ch>",
-                            version = library(help=makecdfenv)$info[[2]][[2]][2],
+                            version = packageDescription("makecdfenv", field="Version"),
                             unlink  = FALSE,
                             verbose = TRUE) {
   
