@@ -1,16 +1,23 @@
+##------------------------------------------------------------
+## (C) Rafael Irizarry, Wolfgang Huber 2003
+##------------------------------------------------------------
+make.cdf.env <- function(filename,
+                         cdf.path = getwd(),
+                         return.env.only = TRUE,
+                         verbose  = TRUE){
+  ## read in the cdf file into a CDF object
+  if(verbose)
+    cat("Reading CDF file.\n")
+  cdf <- read.cdffile(file.path(path.expand(cdf.path),filename))
 
-make.cdf.env <- function(filename,cdf.path=getwd(),env.name="tmpenv",
-                         verbose=TRUE){
-  ##read in the cdf file into a CDF object
-  if(verbose) cat("Reading CDF file.\n")
-  cdf <- read.cdffile(paste(path.expand(cdf.path),filename,sep="/"))
-
-  if(verbose) cat("Creating environment\n")
-  ##extract number or rows and number of columns
+  if(verbose)
+    cat("Creating CDF environment\n")
+  
+  ## extract number or rows and number of columns
   sizex <- dim(cdf@name)[1]
   sizey <- dim(cdf@name)[2]
   
-  ##where are the pm and mm
+  ## where are the pm and mm
   pm.or.mm <- as.vector(pmormm(cdf))
   pmindex <- pm.or.mm
   mmindex <- !pm.or.mm
@@ -21,7 +28,9 @@ make.cdf.env <- function(filename,cdf.path=getwd(),env.name="tmpenv",
   ## position in vector will correspond to the position on the array
   ## given ncol and nrow we can figure out the 2D (x,y) position
   ## now we assign 
-  assign(env.name,new.env(hash=TRUE))
+
+  env = new.env(hash=TRUE, parent=NULL)
+  
   genenames <- name.levels(cdf) ##so that we only use name.level method once
   n <- length(genenames) ##number of genes
   probenames <-  as.vector(cdf@name)
@@ -31,6 +40,7 @@ make.cdf.env <- function(filename,cdf.path=getwd(),env.name="tmpenv",
               c(probenames,probenames,probenames,probenames))
   rm(pmindex,mmindex,position,numbers,probenames)
   names(tmp) <- genenames[as.numeric(names(tmp))]
+
   ## this list will be converted to an environment using multiassign
   if(verbose)
     cat("Wait for about",round(length(tmp)/100),"dots")
@@ -51,8 +61,11 @@ make.cdf.env <- function(filename,cdf.path=getwd(),env.name="tmpenv",
     else
       return(cbind(pm=pm,mm=mm))
   })
-  if(verbose) cat("\n")
-  multiassign(names(tmp),tmp,get(env.name))
+  
+  if(verbose)
+    cat("\n")
+  
+  multiassign(names(tmp),tmp, env)
 
   syms = list(
     XY2I  = paste("xy2i = function(x,y) {y*", sizex, "+x+1}", sep=""),
@@ -60,11 +73,19 @@ make.cdf.env <- function(filename,cdf.path=getwd(),env.name="tmpenv",
     SIZEX = paste(sizex),
     SIZEY = paste(sizey),
     SIZEI = paste(sizex*sizey))
-  
-  return(list(env=get(env.name), syms=syms))
+
+  ## return:
+  if (return.env.only) {
+    rv = env
+  } else {
+    rv = list(env=env, syms=syms)
+  }
+  return(rv)
 }
 
+##------------------------------------------------------------
 ## package maker
+##------------------------------------------------------------
 make.cdf.package<- function(filename,
                             packagename = NULL,
                             cdf.path = getwd(),
@@ -80,7 +101,7 @@ make.cdf.package<- function(filename,
   if(is.null(packagename))
     packagename <- cleancdfname(sub("\.cdf$", "", filename, ignore.case=TRUE))
 
-  cdf <- make.cdf.env(filename,cdf.path=cdf.path)
+  cdf <- make.cdf.env(filename, cdf.path=cdf.path, return.env.only=FALSE)
   assign(packagename, cdf$env)
 
   home  <- .path.package("makecdfenv")
@@ -108,7 +129,7 @@ make.cdf.package<- function(filename,
   ## save an XDR file with the environment
   save(list = packagename, file = file.path(res$pkgdir, "data", paste(packagename,".rda",sep="")))
   
-  return(TRUE)
+  return(packagename)
 }
 
 

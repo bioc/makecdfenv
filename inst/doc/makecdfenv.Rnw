@@ -25,101 +25,120 @@
 
 \maketitle
 \tableofcontents
+
 \section{Introduction}
 The \verb+makecdfenv+ package is part of the
 Bioconductor\footnote{\url{http://www.bioconductor.org/}} project. It
 can be used to create cdf environments from Affymetrix chip
 description files to be used with the package \verb+affy+.
 
+For many {\it CDF} files a pre-assembled package is available from
+\url{http://www.bioconductor.org/data/cdfenvs/cdfenvs.html}. The
+following notes explain what to do if you want to create your own.
+
+\section{Creating a CDF package}
+To install packages, you need certain tools besides R itself.  They
+are generally available on most Unix platforms. Under MS-Windows, if
+you use the precompiled binary distribution of R from CRAN, you will
+need to install some extra tools, like the {\em source package
+installation files} and {\em Perl}. If you think this is too
+complicated, you may skip this section and proceed to
+section~\ref{sec:make.cdf.env}
+
+Let's say your CDF file is called \verb+elephantgenome.cdf+ and
+is in your working directory. To make a package, simply write
+\begin{Sinput}
+R> make.cdf.package("elephantgenome.cdf")
+\end{Sinput}
+This will create a subdirectory \verb+elephantgenomecdf+ in your
+working directory, which contains the package.  Please consult the
+help page for \verb+make.cdf.package+ to find out about further
+options.
+
+Now, open a terminal with an operating system shell, and write
+\begin{Sinput}
+$ R CMD INSTALL elephantgenomecdf   
+\end{Sinput}
+This will install the package into your R. You are now ready to use the 
+affy package to process elephant genechips.
+
 \section{Creating CDF environments}
-This package has two functions. \verb+make.cdf.env+ reads in a CDF
-file and creates an environment containing a hash table. The function
-\verb+make.cdf.package+ makes a package that, if installed, the
-\verb+affy+ package will know how to find when needed. For more details
-on how all this works, see the next section.
-
-Lets say your CDF file is called \verb+weird.CDF+ and it is in your
-working directory Then to create an environment an appropriate
-environment all you have to do is
+\label{sec:make.cdf.env}
+If you do not choose to use the package creation mechanism, you can
+still produce a data structure (in R lingo, it is called 
+{\it environment}) that can be used by the affy package.
+Let's say your CDF file is called \verb+elephantgenome.cdf+ and  
+is in your working directory. Simply write
 \begin{Sinput}
-R> make.cdf.env("weird.CDF")
-\end{Sinput}
-If the file is not in your working directory you can specify the path
-using the argument \verb+cdf.path+. 
+R> elephantcdf = make.cdf.env("elephantgenome.cdf")
+\end{Sinput} 
+Please consult the help page for \verb+make.cdf.env+ to find out 
+about further options.
 
-To make a package you simply have to write
+\section{Naming of CDF packages and environments}
+What should you call your package or environment? 
+
+\verb+make.cdf.package+ chooses a default name by stripping all
+non-letters and non-numbers from the CDF file name, and converting
+everything to lower case. In many cases, this will work. 
+
+You can obtain the CDF name that is associated with a CEL file through
 \begin{Sinput}
-R> make.cdf.package("weird.CDF")
+R> pname <- cleancdfname(whatcdf("mycelfile.cel"))
 \end{Sinput}
-Again, if the file is not in your working directory specify the path with
-\verb+cdf.path+. This will create a package in your working directory
-called \verb+weirdcdf+. If you want it to be created somewhere else
-use the \verb+package.path+ argument.
-
-What should you call your package? In most cases the given default
-name will work. What should always work is to use the clean version 
-of the CDF name given in the CEL files you are trying to read. So for
-example, if you are reading the CEL file \verb+celfile1.CEL+ you can write
+Then call the package making function this way:
 \begin{Sinput}
-R> pname <- cleancdfname(whatcdf("celfile1.CEL"))
+R> make.cdf.package("weird.CDF", packagename=pname)
 \end{Sinput}
-This will give you the appropriate package name. You can now call the
-package making function this way:
-\begin{Sinput}
-R> make.cdf.package("weird.CDF",packagename=pname)
-\end{Sinput}
+Similarly, if you work with the environments directly (as
+described in section~\ref{sec:make.cdf.env}) simply replace the word
+\verb+elephantcdf+ with what ever the value of \verb+pname+ is.
 
-Once you have the package, install it and \verb+affy+ should be able
-to find it.
- 
-\section{Location-ProbeSet Mapping}
-\label{sec:probesloc}
-On Affymetrix GeneChip arrays, several probes are used to represent 
-genes in the form of probe sets. From a {\it CEL} file we get for each
-physical location, or cel,
-(defined by $x$ and $y$ coordinates) an intensity. The {\it CEL} file also
-contains the name of the {\it CDF} file needed for the
-location-probe-set mapping. The {\it CDF}
-files store the probe set related to each location on the array.
-We store this mapping information in {\it R} environments. For most
-{\it CDF} file there is package, available from
-\url{http://www.bioconductor.org/data/cdfenvs/cdfenvs.html}, that contains
-exactly one of these environments. In our packages we store the $x$
-and $y$
-coordinates as one number ($x \times$ \verb+nrow+ $+ y + 1$).
-However, for those CDF files we missed you can use this package to
-create your environment.
-
-In instances of {\it AffyBatch}, the
-{\it cdfName} slot gives the name of the appropriate {\it CDF} file
-for arrays represented in the \verb+intensity+ slot.
-The functions \verb+read.celfile+, \verb+read.affybatch+, and
-\verb+ReadAffy+ extract the {\it CDF} filename from the {\it CEL}
-files being read.
-Each {\it CDF} file corresponds to exactly one environment. The
-function \verb+cleancdfname+ converts the Affymetrix given {\it CDF}
-name to a Bioconductor environment and annotation name. Here are two examples:
-
-
+In instances of \verb+AffyBatch+, the \verb+cdfName+ slot gives the name
+of the appropriate CDF file for the arrays that are represented in the
+\verb+intensity+ slot.  
+The functions \verb+read.celfile+,
+\verb+read.affybatch+, and \verb+ReadAffy+ extract the CDF
+filename from the CEL files that they read. The function
+\verb+cleancdfname+ converts Affymetrix' CDF name to the name  
+that is used in Bioconductor. Here are two examples:
 <<echo=F,results=hide>>=
 library(affy)
 @
-
-These give environment names:
 <<>>=
 cat("HG_U95Av2 is",cleancdfname("HG_U95Av2"),"\n")
 cat("HG-133A is",cleancdfname("HG-133A"),"\n")
 @ 
+The method \verb+getCdfInfo+ takes as an argument an \verb+AffyBatch+
+and returns the appropriate environment.  If \verb+x+ is an
+\verb+AffyBatch+, this function will look for an environment with name
+\verb+cleancdfname(x@cdfName)+.  
 
-The package needs to know what locations correspond to which probe
-sets. The \verb+cdfName+ slot contains the necessary information to
-find the environment with this location information. The
-method \verb+getCdfInfo+ takes as an argument an \verb+AffyBatch+ and
-returns the 
-necessary environment. If \verb+x+ is an \verb+AffyBatch+, this
-function will look for an environment with name 
-\verb+cleancdfname(x@cdfName)+. 
-For example:
+\section{Location-ProbeSet Mapping}
+\label{sec:probesloc}
+On Affymetrix GeneChip arrays, several probes are used to represent
+genes in the form of probe sets. From a {\it CEL} file we get for each
+physical location, or cel, (uniquely identified by its $x$ and $y$
+coordinates) an intensity.  The {\it CEL} file also contains the name
+of the {\it CDF} file needed for the location-probe-set mapping. The
+{\it CDF} files store the name of the probe set related to each
+location on the array.  We store this mapping information in {\it R}
+environments, such as the ones produced by \verb+make.cdf.env+ or
+contained in the packages made by \verb+make.cdf.package+.
+
+In \verb+affy+, the $x$ and $y$ coordinates are internally stored as
+one number $i$. The mapping between $(x,y)$ and $i$ is provided by the
+functions \verb+i2xy(i)+ and \verb+xy2i+ that are contained in each
+CDF package. They are very simple:
+\begin{eqnarray*}  
+  i &=& y * s_x + x + 1\\
+  x &=& i\%\% s_x - 1\\
+  y &=&  i\%/\%s_x,
+\end{eqnarray*}
+where $s_x$ is the side length of the chip (measured in number of 
+probes) in $x$-direction.
+
+
 
 
 \end{document}

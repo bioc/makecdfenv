@@ -1,6 +1,5 @@
 \name{make.cdf.package}
 \alias{make.cdf.package}
-%- Also NEED an `\alias' for EACH other topic documented here.
 \title{CDF Environment Package Maker}
 \description{
 This function reads an Affymetrix chip description file (CDF) and
@@ -18,46 +17,44 @@ make.cdf.package(filename,
 }
 %- maybe also `usage' for other objects documented here.
 \arguments{
-  \item{filename}{a character containing the filename of the CDF file. We
-    assume the fullpath is *not* given.}
-  \item{packagename}{a character containg the name wanted for the package}
-  \item{cdf.path}{The path needed to find the CDF file.}
-  \item{package.path}{The path where the package will be created.}
-  \item{author}{character denoting what to put in the author field.}
-  \item{maintainer}{character denoting what to put in the maintainer field.}
-  \item{version}{character denoting what to put in the version
+  \item{filename}{A character containing the filename of the CDF file -
+    \bold{without} the path prefix!}
+  \item{packagename}{A character containg the name wanted for the package.}
+  \item{cdf.path}{A character with the path to the CDF file.}
+  \item{package.path}{A character with the path where the package will be created.}
+  \item{author}{A character denoting what to put in the author field.}
+  \item{maintainer}{A character denoting what to put in the maintainer field.}
+  \item{version}{A character denoting what to put in the version
    field. Should be a of the form \code{x.x.x}.}
-  \item{force}{logical. If \code{TRUE}, and a package directory exists
+  \item{force}{Logical. If \code{TRUE}, and a package directory exists
    already in \code{package.path}, that is overwritten.}
-  \item{verbose}{logical. If \code{TRUE} messages are shown.}
+  \item{verbose}{Logical. If \code{TRUE} messages are shown.}
 }
-\details{
-  By default the package name will be the name of the CDF file made
-  lower case and with special characters removed (i.e. only
-  alpha-numeric).
-  For this reason the full path should not be given in
-  the \code{filename} argument, instead the user should specify it in
-  with the \code{cdf.path}
-  argument.
+\details{The function is called for its side effect, creating a package.
+By default the package name will be the name of the CDF file made lower
+case and with special characters removed (i.e. only
+alpha-numeric). 
   
-  In general one would want to use the name given in by
-  \code{cleancdfname(abatch@cdfName)} with \code{abatch} an
-  \code{\link[affy]{AffyBatch}} object obtained, for example, using
-  \code{\link[affy]{ReadAffy}}. This is the package name that the
-  \code{affy} package looks for by default.
+In general one would want to use the name given in by
+\code{cleancdfname(abatch@cdfName)} with \code{abatch} an
+\code{\link[affy]{AffyBatch}} object obtained, for example, using
+\code{\link[affy]{ReadAffy}}. This is the package name that the
+\code{affy} package looks for by default.
 
-  If the user has a CEL file, called \code{filename}, the recommended
-  package name for the environment is
-  \code{cleancdfname(whatcdf(filename))}. This usually coincides with
-  the default.
+If the user has a CEL file, called \code{filename}, the recommended
+package name for the environment is
+\code{cleancdfname(whatcdf(filename))}. This usually coincides with
+the default.
+
+Please see the vignette for more details.
 }
 \value{
-  If it works it will return \code{TRUE}. A package will be created as well.
+If success, the function returns the name of the created package.
 }
-\author{Rafael A. Irizarry}
+\author{Rafael A. Irizarry, Wolfgang Huber}
 \seealso{\code{\link{make.cdf.env}}}
 
-\keyword{manip}% at least one, from doc/KEYWORDS
+\keyword{manip}
 
 
 
