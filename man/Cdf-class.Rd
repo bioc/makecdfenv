@@ -79,11 +79,11 @@
  MMs.
 }
 \seealso{
-  \code{\link[affy:Cel-class]{Cel}}
+\code{\link{read.cdffile}},
+\code{\link{make.cdf.env}},
+\code{\link{make.cdf.package}}
 }
-\author{
-  L. Gautier <laurent@cbs.dtu.dk>
-}
+\author{L. Gautier <laurent@cbs.dtu.dk>}
 
 \section{Methods}{
   \describe{
@@ -116,21 +116,4 @@
       \code{tbase.levels} slot. }
   }
 }
-\examples{
-
-data(cdf.example)
-
-## to see where the probes corresponding to given name are found
-theName <- "D87446_at"
-
-index <- which(name.levels(cdf.example) == theName)
-theCoords <- which(probeNames(cdf.example) == index, arr.ind=TRUE)
-
-## to have a visual representation of them
-dimChip <- dim(probeNames(cdf.example))
-plot(c(1,dimChip[1]), c(1,dimChip[2]), type="n", xlab="", ylab="")
-points(theCoords, col="red", pch=16)
-
-}
-
 \keyword{methods}
