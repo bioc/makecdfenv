@@ -6,31 +6,32 @@ read.cdffile <- function(file, compress=FALSE) {
 
   ff@cdfName <- tmp
 
-  tmp <- .Call("readCDFfile", as.character(file), as.integer(3), as.integer(compress))
+  tmp <- .Call("readCDFfile", as.character(file), as.integer(3),
+  as.integer(compress), PACKAGE="makecdfenv")
   tmp[tmp == ""] <- NA
   mydim <- dim(tmp)
 
   tmp <- factor(tmp)
-  
+
   ff@name <- array(as.integer(tmp), mydim)
 
   ff@name.levels <- levels(tmp)
   rm(tmp)
   gc()
   tmp <- .Call("readCDFfile", as.character(file),
-               as.integer(7), as.integer(compress))
+               as.integer(7), as.integer(compress), PACKAGE="makecdfenv")
   tmp[tmp == ""] <- NA
   mydim <- dim(tmp)
-  
+
   tmp <- factor(tmp)
-  
+
   ff@pbase <- array(as.integer(tmp), mydim)
 
   ff@pbase.levels <- levels(tmp)
   rm(tmp)
   gc()
   tmp <- .Call("readCDFfile", as.character(file),
-               as.integer(8), as.integer(compress))
+               as.integer(8), as.integer(compress), PACKAGE="makecdfenv")
   tmp[tmp == ""] <- NA
   mydim <- dim(tmp)
   tmp <- factor(tmp)
@@ -40,15 +41,15 @@ read.cdffile <- function(file, compress=FALSE) {
   ff@tbase.levels <- levels(tmp)
   rm(tmp)
   gc()
-  
+
   tmp <- .Call("readCDFfile", as.character(file),
-               as.integer(9), as.integer(compress))
+               as.integer(9), as.integer(compress), PACKAGE="makecdfenv")
   tmp[tmp == ""] <- NA
   mydim <- dim(tmp)
 
   ff@atom <- array(as.integer(tmp), mydim)
 
-  gc() 
+  gc()
 
   return(ff)
 }
