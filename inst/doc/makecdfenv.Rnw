@@ -19,7 +19,7 @@
 
 \newcommand{\scscst}{\scriptscriptstyle}
 \newcommand{\scst}{\scriptstyle}
-\author{Rafael Irizarry, with some contributions from Wolfgang Huber}
+\author{Wolfgang Huber and Rafael Irizarry}
 \begin{document}
 \title{Textual description of makecdfenv}
 
@@ -42,7 +42,9 @@ are generally available on most Unix platforms. Under MS-Windows, if
 you use the precompiled binary distribution of R from CRAN, you will
 need to install some extra tools, like the {\em source package
 installation files} and {\em Perl}. If you think this is too
-complicated, you may skip this section and proceed to
+complicated, you can contribute the package to Bioconductor 
+and we will create a windows binary for you. Alternatively, 
+you may skip this section and proceed to
 section~\ref{sec:make.cdf.env}
 
 Let's say your CDF file is called \verb+eggplantgenome.cdf+ and
