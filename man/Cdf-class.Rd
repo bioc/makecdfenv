@@ -25,15 +25,11 @@
 \alias{tbase<-,Cdf-method}
 \alias{tbase.levels,Cdf-method}
 \alias{tbase.levels<-,Cdf-method}
-\alias{probeNames,Cdf-method}
-\alias{probeNames<-,Cdf-method}
 \alias{show,Cdf-method}
 
 
-%\alias{probeNames}
-%\alias{probeNames<-}
 \title{Class Cdf}
-\description{  A class describing the content a Chip Description File.}
+\description{A class describing the content a Chip Description File.}
 \section{Creating Objects}{
   \code{  new('Cdf',}\cr
   \code{    cdfName      = ...., # Object of class character}\cr
@@ -108,10 +104,6 @@
       \code{pbase.levels} slot. }
     \item{pbase.levels<-}{(Cdf): A replacement function for
       \code{pbase.levels} slot. }
-    \item{probeNames}{(Cdf):  An accesor function for the
-      \code{name} slot. }
-    \item{probeNames<-}{(Cdf): A replacement function for
-      \code{name} slot. }
     \item{show}{(Cdf):  renders information about the exprSet in a concise
       way on stdout. }
     \item{tbase}{(Cdf):  An accesor function for the
