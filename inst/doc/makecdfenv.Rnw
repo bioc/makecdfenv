@@ -1,0 +1,131 @@
+% -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
+%\VignetteIndexEntry{affy primer}
+%\VignetteKeywords{Preprocessing, Affymetrix}
+%\VignetteDepends{affy}
+%\VignettePackage{affy}
+%documentclass[12pt, a4paper]{article}
+\documentclass[12pt]{article}
+
+\usepackage{amsmath,pstricks}
+\usepackage{hyperref}
+\usepackage[authoryear,round]{natbib}
+
+\textwidth=6.2in
+\textheight=8.5in
+%\parskip=.3cm
+\oddsidemargin=.1in
+\evensidemargin=.1in
+\headheight=-.3in
+
+\newcommand{\scscst}{\scriptscriptstyle}
+\newcommand{\scst}{\scriptstyle}
+\author{Rafael Irizarry}
+\begin{document}
+\title{Textual description of makecdfenv}
+
+\maketitle
+\tableofcontents
+\section{Introduction}
+The \verb+makecdfenv+ package is part of the
+Bioconductor\footnote{\url{http://www.bioconductor.org/}} project. It
+can be used to create cdf environments from Affymetrix chip
+description files to be used with the package \verb+affy+.
+
+\section{Creating CDF environments}
+This package has two functions. \verb+make.cdf.env+ reads in a CDF
+file and creates an environment containing a hash table. The function
+\verb+make.cdf.package+ makes a package that, if installed, the
+\verb+affy+ package will know how to find when needed. For more details
+on how all this works, see the next section.
+
+Lets say your CDF file is called \verb+weird.CDF+ and it is in your
+working directory Then to create an environment an appropriate
+environment all you have to do is
+\begin{Sinput}
+R> make.cdf.env("weird.CDF")
+\end{Sinput}
+If the file is not in your working directory you can specify the path
+using the argument \verb+cdf.path+. 
+
+To make a package you simply have to write
+\begin{Sinput}
+R> make.cdf.package("weird.CDF")
+\end{Sinput}
+Again, if the file is not in your working directory specify the path with
+\verb+cdf.path+. This will create a package in your working directory
+called \verb+weirdcdf+. If you want it to be created somewhere else
+use the \verb+package.path+ argument.
+
+What should you call your package? In most cases the given default
+name will work. What should always work is to use the clean version 
+of the CDF name given in the CEL files you are trying to read. So for
+example, if you are reading the CEL file \verb+celfile1.CEL+ you can write
+\begin{Sinput}
+R> pname <- cleancdfname(whatcdf("celfile1.CEL"))
+\end{Sinput}
+This will give you the appropriate package name. You can now call the
+package making function this way:
+\begin{Sinput}
+R> make.cdf.package("weird.CDF",packagename=pname)
+\end{Sinput}
+
+Once you have the package, install it and \verb+affy+ should be able
+to find it.
+ 
+\section{Location-ProbeSet Mapping}
+\label{sec:probesloc}
+On Affymetrix GeneChip arrays, several probes are used to represent 
+genes in the form of probe sets. From a {\it CEL} file we get for each
+physical location, or cel,
+(defined by $x$ and $y$ coordinates) an intensity. The {\it CEL} file also
+contains the name of the {\it CDF} file needed for the
+location-probe-set mapping. The {\it CDF}
+files store the probe set related to each location on the array.
+We store this mapping information in {\it R} environments. For most
+{\it CDF} file there is package, available from
+\url{http://www.bioconductor.org/data/cdfenvs/cdfenvs.html}, that contains
+exactly one of these environments. In our packages we store the $x$
+and $y$
+coordinates as one number ($x \times$ \verb+nrow+ $+ y + 1$).
+However, for those CDF files we missed you can use this package to
+create your environment.
+
+In instances of {\it AffyBatch}, the
+{\it cdfName} slot gives the name of the appropriate {\it CDF} file
+for arrays represented in the \verb+intensity+ slot.
+The functions \verb+read.celfile+, \verb+read.affybatch+, and
+\verb+ReadAffy+ extract the {\it CDF} filename from the {\it CEL}
+files being read.
+Each {\it CDF} file corresponds to exactly one environment. The
+function \verb+cleancdfname+ converts the Affymetrix given {\it CDF}
+name to a Bioconductor environment and annotation name. Here are two examples:
+
+
+<<echo=F,results=hide>>=
+library(affy)
+@
+
+These give environment names:
+<<>>=
+cat("HG_U95Av2 is",cleancdfname("HG_U95Av2"),"\n")
+cat("HG-133A is",cleancdfname("HG-133A"),"\n")
+@ 
+
+The package needs to know what locations correspond to which probe
+sets. The \verb+cdfName+ slot contains the necessary information to
+find the environment with this location information. The
+method \verb+getCdfInfo+ takes as an argument an \verb+AffyBatch+ and
+returns the 
+necessary environment. If \verb+x+ is an \verb+AffyBatch+, this
+function will look for an environment with name 
+\verb+cleancdfname(x@cdfName)+. 
+For example:
+
+
+\end{document}
+
+
+
+
+
+
