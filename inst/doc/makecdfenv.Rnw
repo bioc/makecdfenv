@@ -45,32 +45,32 @@ installation files} and {\em Perl}. If you think this is too
 complicated, you may skip this section and proceed to
 section~\ref{sec:make.cdf.env}
 
-Let's say your CDF file is called \verb+elephantgenome.cdf+ and
+Let's say your CDF file is called \verb+eggplantgenome.cdf+ and
 is in your working directory. To make a package, simply write
 \begin{Sinput}
-R> make.cdf.package("elephantgenome.cdf")
+R> make.cdf.package("eggplantgenome.cdf")
 \end{Sinput}
-This will create a subdirectory \verb+elephantgenomecdf+ in your
+This will create a subdirectory \verb+eggplantgenomecdf+ in your
 working directory, which contains the package.  Please consult the
 help page for \verb+make.cdf.package+ to find out about further
 options.
 
 Now, open a terminal with an operating system shell, and write
 \begin{Sinput}
-$ R CMD INSTALL elephantgenomecdf   
+$ R CMD INSTALL eggplantgenomecdf   
 \end{Sinput}
 This will install the package into your R. You are now ready to use the 
-affy package to process elephant genechips.
+affy package to process eggplant genechips.
 
 \section{Creating CDF environments}
 \label{sec:make.cdf.env}
 If you do not choose to use the package creation mechanism, you can
 still produce a data structure (in R lingo, it is called 
 {\it environment}) that can be used by the affy package.
-Let's say your CDF file is called \verb+elephantgenome.cdf+ and  
+Let's say your CDF file is called \verb+eggplantgenome.cdf+ and  
 is in your working directory. Simply write
 \begin{Sinput}
-R> elephantcdf = make.cdf.env("elephantgenome.cdf")
+R> eggplantcdf = make.cdf.env("eggplantgenome.cdf")
 \end{Sinput} 
 Please consult the help page for \verb+make.cdf.env+ to find out 
 about further options.
@@ -92,7 +92,7 @@ R> make.cdf.package("weird.CDF", packagename=pname)
 \end{Sinput}
 Similarly, if you work with the environments directly (as
 described in section~\ref{sec:make.cdf.env}) simply replace the word
-\verb+elephantcdf+ with what ever the value of \verb+pname+ is.
+\verb+eggplantcdf+ with what ever the value of \verb+pname+ is.
 
 In instances of \verb+AffyBatch+, the \verb+cdfName+ slot gives the name
 of the appropriate CDF file for the arrays that are represented in the
