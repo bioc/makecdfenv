@@ -1,8 +1,8 @@
 % -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
 %\VignetteIndexEntry{makecdfenv primer}
 %\VignetteKeywords{Preprocessing, Affymetrix}
-%\VignetteDepends{affy}
-%\VignettePackage{affy}
+%\VignetteDepends{makecdfenv, affy}
+%\VignettePackage{makecdfenv}
 %documentclass[12pt, a4paper]{article}
 \documentclass[12pt]{article}
 
