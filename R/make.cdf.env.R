@@ -4,18 +4,16 @@
 make.cdf.env <- function(filename,
                          cdf.path = getwd(),
                          return.env.only = TRUE,
-                         verbose  = TRUE,
-                         compress = FALSE) {
-  stopifnot(is.logical(verbose) && is.logical(compress) &&
-            is.logical(return.env.only) && is.character(cdf.path) &&
-            is.character(filename))
+                         verbose = TRUE) {
+  stopifnot(is.logical(verbose)    && is.logical(return.env.only) &&
+            is.character(cdf.path) && is.character(filename))
   stopifnot(all(c(length(filename), length(cdf.path), length(return.env.only),
-                  length(verbose), length(compress)) == 1))
+                  length(verbose)) == 1))
   
   ## read in the cdf file into a CDF object
   if(verbose)
     cat("Reading CDF file.\n")
-  cdf <- read.cdffile(file.path(path.expand(cdf.path),filename), compress)
+  cdf <- read.cdffile(file.path(path.expand(cdf.path),filename))
 
   if(verbose)
     cat("Creating CDF environment\n")

@@ -51,8 +51,17 @@ Please see the vignette for more details.
 \value{
 If success, the function returns the name of the created package.
 }
-\author{Rafael A. Irizarry, Wolfgang Huber}
 \seealso{\code{\link{make.cdf.env}}}
+\author{Rafael A. Irizarry, Wolfgang Huber}
+\example{
+  ## Presently, the example is commented out since including
+  ## the file HG_U95Av2.CDF would add another 30 MB to the package.
+  ## Compression would put this down to 5 MB but is not supported on
+  ## all platforms. If you have an example CDF file that is small
+  ## enough to be included, please let me know - wh
+   
+  ## make.cdf.package("HG_U95Av2.CDF")
+}
 
 \keyword{manip}
 

@@ -138,8 +138,8 @@ functions \Rfunction{i2xy(i)} and \Rfunction{xy2i} that are contained in each
 CDF package. They are very simple:
 \begin{eqnarray*}
   i &=& y  s_x + x + 1\\
-  x &=& i\,\%\%\,  s_x - 1\\
-  y &=& i\,\%/\%\, s_x,
+  x &=& (i-1)\,\%\%\,  s_x\\
+  y &=& (i-1)\,\%/\%\, s_x,
 \end{eqnarray*}
 where $s_x$ is the side length of the chip (measured in number of
 probes) in $x$-direction.
