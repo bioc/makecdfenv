@@ -53,7 +53,7 @@ make.cdf.env(filename,
 }
 \seealso{\code{\link{make.cdf.package}}}
 \author{Rafael A. Irizarry, Wolfgang Huber}
-\example{
+\examples{
   env <- make.cdf.env("Hu6800.CDF.gz",
            cdf.path=file.path(.path.package("makecdfenv"), "data"),
            compress=TRUE)
