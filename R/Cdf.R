@@ -1,6 +1,6 @@
 ## Laurent 2002 tneruaL
 ## Class definitions for 'Cdf'
-  setClass("Cdf", representation(cdfName="character",
+setClass("Cdf", representation(cdfName="character",
                                  name="matrix",
                                  name.levels="character",
                                  pbase="matrix",
@@ -8,7 +8,7 @@
                                  tbase="matrix",
                                  tbase.levels="character",
                                  atom="matrix"))
-   ##name.levels method
+  ## name.levels method
   if( !isGeneric("name.levels") ) {
     setGeneric("name.levels", function(object)
                standardGeneric("name.levels"))
@@ -25,7 +25,7 @@
     object
     })
 
- ##pbase method
+  ## pbase method
   if( !isGeneric("pbase") ) {
     setGeneric("pbase", function(object)
                standardGeneric("pbase"))
@@ -58,7 +58,8 @@
     object@pbase.levels <- value
     object
     })
- ##tbase method
+
+  ## tbase method
   if( !isGeneric("tbase") ) {
     setGeneric("tbase", function(object)
                standardGeneric("tbase"))
@@ -74,7 +75,8 @@
     object@tbase <- value
     object
     })
- ##tbase.levels method
+
+  ## tbase.levels method
   if( !isGeneric("tbase.levels") ) {
     setGeneric("tbase.levels", function(object)
                standardGeneric("tbase.levels"))
@@ -90,36 +92,6 @@
     object@tbase.levels <- value
     object
     })
-  ##atom method
-  if( !isGeneric("atom") ) {
-    setGeneric("atom", function(object)
-               standardGeneric("atom"))
-  } else
-    cat("atom is already generic, could be a problem.\n")
-
-  setMethod("atom","Cdf",function(object) object@atom)
-
-  if( !isGeneric("atom<-") )
-    setGeneric("atom<-", function(object, value)
-                 standardGeneric("atom<-"))
-  setReplaceMethod("atom", "Cdf", function(object, value){
-    object@atom <- value
-    object
-  })
-  ##probeNames method
-  if( !isGeneric("probeNames") )
-    setGeneric("probeNames", function(object, ...)
-               standardGeneric("probeNames"))
-
-  setMethod("probeNames","Cdf",function(object) object@name)
-
-  if( !isGeneric("probeNames<-") )
-    setGeneric("probeNames<-", function(object, value)
-                 standardGeneric("probeNames<-"))
-  setReplaceMethod("probeNames", "Cdf", function(object, value){
-    object@name <- value
-    object
-  })
 
   ## printing method for 'Cdf'
   setMethod("show", "Cdf",
