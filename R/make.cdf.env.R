@@ -1,5 +1,10 @@
 ##------------------------------------------------------------
 ## (C) Rafael Irizarry, Wolfgang Huber 2003
+##
+## Modifications by B. M. Bolstad for binary CDF files Feb 2005
+## Note that the binary parser ignores the cdffile object
+## altogether and creates much of the structure in the c code
+##
 ##------------------------------------------------------------
 make.cdf.env <- function(filename,
                          cdf.path = getwd(),
@@ -10,82 +15,120 @@ make.cdf.env <- function(filename,
             is.character(cdf.path), is.character(filename))
   stopifnot(length(filename)==1, length(cdf.path)==1, length(return.env.only)==1,
             length(verbose)==1, length(compress)==1)
-  
-  ## read in the cdf file into a CDF object
-  if(verbose)
-    cat("Reading CDF file.\n")
-  cdf <- read.cdffile(file.path(path.expand(cdf.path),filename), compress=compress)
 
-  if(verbose)
-    cat("Creating CDF environment\n")
-  
-  ## extract number or rows and number of columns
-  sizex <- dim(cdf@name)[1]
-  sizey <- dim(cdf@name)[2]
-  
-  ## where are the pm and mm
-  pm.or.mm <- as.vector(pmormm(cdf))
-  pmindex <- pm.or.mm
-  mmindex <- !pm.or.mm
-  rm(pm.or.mm)
-  
-  ## get ready to go
-  ## start the new environment
-  ## position in vector will correspond to the position on the array
-  ## given ncol and nrow we can figure out the 2D (x,y) position
-  ## now we assign 
 
-  env = new.env(hash=TRUE, parent=NULL)
-  
-  genenames <- name.levels(cdf) ##so that we only use name.level method once
-  n <- length(genenames) ##number of genes
-  probenames <-  as.vector(cdf@name)
-  position <- 1:length(probenames)
-  numbers <- as.vector(cdf@atom)##number relates to position in genome
-  tmp<- split(c(position,  pmindex,   mmindex,   numbers),
-              c(probenames,probenames,probenames,probenames))
-  rm(pmindex,mmindex,position,numbers,probenames)
-  names(tmp) <- genenames[as.numeric(names(tmp))]
-
-  ## this list will be converted to an environment using multiassign
-  if(verbose)
-    cat("Wait for about",round(length(tmp)/100),"dots")
-  tmp <- lapply(tmp,function(x){
-    if(verbose)
-      if(runif(1)<0.01) cat(".")
-    n <- length(x)/4
-    position <- x[1:n] 
-    pmindex <- which(x[(n+1):(2*n)]==1)
-    mmindex <- which(x[(2*n+1):(3*n)]==1)
-    numbers <- x[(3*n+1):(4*n)]
-
-    ##get pm and mm and put in order according to numbers
-    pm <- position[pmindex][order(numbers[pmindex])]
-    mm <- position[mmindex][order(numbers[mmindex])]
-    if(length(mm)==0)
-      return(cbind(pm=pm,mm=rep(NA,length(pm))))
-    else
-      return(cbind(pm=pm,mm=mm))
-  })
-  
-  if(verbose)
-    cat("\n")
-  
-  multiassign(names(tmp),tmp, env)
-
-  syms = list(
-    I2XY  = paste("y*", sizex, "+x+1", sep=""),
-    XY2I  = paste("r=cbind((i-1)%%",sizex,",(i-1)%/%",sizex,"); colnames(r)=c('x','y'); return(r)", sep=""),
-    SIZEX = paste(sizex),
-    SIZEY = paste(sizey),
-    SIZEI = paste(sizex*sizey))
-
-  ## return:
-  if (return.env.only) {
-    rv = env
-  } else {
-    rv = list(env=env, syms=syms)
+  isCDFXDA <- function(filename){
+    return (.Call("CheckCDFXDA",filename,PACKAGE="makecdfenv"))
   }
+
+
+
+  if (!isCDFXDA(file.path(path.expand(cdf.path),filename))){
+    # a "classic" CDF file (ie text)
+
+    ## read in the cdf file into a CDF object
+    if(verbose)
+      cat("Reading CDF file.\n")
+    cdf <- read.cdffile(file.path(path.expand(cdf.path),filename), compress=compress)
+    
+    if(verbose)
+      cat("Creating CDF environment\n")
+  
+    ## extract number or rows and number of columns
+    sizex <- dim(cdf@name)[1]
+    sizey <- dim(cdf@name)[2]
+  
+    ## where are the pm and mm
+    pm.or.mm <- as.vector(pmormm(cdf))
+    pmindex <- pm.or.mm
+    mmindex <- !pm.or.mm
+    rm(pm.or.mm)
+    
+    ## get ready to go
+    ## start the new environment
+    ## position in vector will correspond to the position on the array
+    ## given ncol and nrow we can figure out the 2D (x,y) position
+    ## now we assign 
+    
+    env = new.env(hash=TRUE, parent=NULL)
+    
+    genenames <- name.levels(cdf) ##so that we only use name.level method once
+    n <- length(genenames) ##number of genes
+    probenames <-  as.vector(cdf@name)
+    position <- 1:length(probenames)
+    numbers <- as.vector(cdf@atom)##number relates to position in genome
+    tmp<- split(c(position,  pmindex,   mmindex,   numbers),
+                c(probenames,probenames,probenames,probenames))
+    rm(pmindex,mmindex,position,numbers,probenames)
+    names(tmp) <- genenames[as.numeric(names(tmp))]
+    
+    ## this list will be converted to an environment using multiassign
+    if(verbose)
+      cat("Wait for about",round(length(tmp)/100),"dots")
+    tmp <- lapply(tmp,function(x){
+      if(verbose)
+        if(runif(1)<0.01) cat(".")
+      n <- length(x)/4
+      position <- x[1:n] 
+      pmindex <- which(x[(n+1):(2*n)]==1)
+      mmindex <- which(x[(2*n+1):(3*n)]==1)
+      numbers <- x[(3*n+1):(4*n)]
+      
+      ##get pm and mm and put in order according to numbers
+      pm <- position[pmindex][order(numbers[pmindex])]
+      mm <- position[mmindex][order(numbers[mmindex])]
+      if(length(mm)==0)
+        return(cbind(pm=pm,mm=rep(NA,length(pm))))
+      else
+        return(cbind(pm=pm,mm=mm))
+    })
+    
+    if(verbose)
+      cat("\n")
+    
+    multiassign(names(tmp),tmp, env)
+    
+    syms = list(
+      I2XY  = paste("y*", sizex, "+x+1", sep=""),
+      XY2I  = paste("r=cbind((i-1)%%",sizex,",(i-1)%/%",sizex,"); colnames(r)=c('x','y'); return(r)", sep=""),
+      SIZEX = paste(sizex),
+      SIZEY = paste(sizey),
+      SIZEI = paste(sizex*sizey))
+    
+    ## return:
+    if (return.env.only) {
+      rv = env
+    } else {
+      rv = list(env=env, syms=syms)
+    }
+  } else {
+    ## Binary CDF file("ReadCDFFile",
+    tmp <- .Call("ReadCDFFile",file.path(path.expand(cdf.path),filename),PACKAGE="makecdfenv")
+    sizex <- tmp[[1]][1]
+    sizey <- tmp[[1]][2]
+    tmp <- tmp[[2]][order(names(tmp[[2]]))]
+
+    env = new.env(hash=TRUE, parent=NULL)
+    multiassign(names(tmp),tmp, env)
+    syms = list(
+      I2XY  = paste("y*", sizex, "+x+1", sep=""),
+      XY2I  = paste("r=cbind((i-1)%%",sizex,",(i-1)%/%",sizex,"); colnames(r)=c('x','y'); return(r)", sep=""),
+      SIZEX = paste(sizex),
+      SIZEY = paste(sizey),
+      SIZEI = paste(sizex*sizey))
+    
+    ## return:
+    if (return.env.only) {
+      rv = env
+    } else {
+      rv = list(env=env, syms=syms)
+    }
+    
+  }
+
+
+
+    
   return(rv)
 }
 
