@@ -19,5 +19,10 @@ view the function definitions.}
 
 \examples{
   xy2i(5,5)
-  stopifnot(all(i2xy(xy2i(5,5)) == c(5,5)))
+  i     = 1:(@SIZEX@*@SIZEY@)
+  coord = i2xy(i)
+  j     = xy2i(coord[, "x"], coord[, "y"])
+  stopifnot(all(i==j))
+  range(coord[, "x"])
+  range(coord[, "y"])
 }
