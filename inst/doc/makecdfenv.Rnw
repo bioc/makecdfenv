@@ -88,7 +88,7 @@ R> pname <- cleancdfname(whatcdf("mycelfile.cel"))
 \end{Sinput}
 Then call the package making function this way:
 \begin{Sinput}
-R> make.cdf.package("weird.CDF", packagename=pname)
+R> make.cdf.package("eggplantgenome.cdf", packagename=pname)
 \end{Sinput}
 Similarly, if you work with the environments directly (as
 described in section~\ref{sec:make.cdf.env}) simply replace the word
@@ -131,9 +131,9 @@ one number $i$. The mapping between $(x,y)$ and $i$ is provided by the
 functions \verb+i2xy(i)+ and \verb+xy2i+ that are contained in each
 CDF package. They are very simple:
 \begin{eqnarray*}  
-  i &=& y * s_x + x + 1\\
-  x &=& i\%\% s_x - 1\\
-  y &=&  i\%/\%s_x,
+  i &=& y  s_x + x + 1\\
+  x &=& i\,\%\%\,  s_x - 1\\
+  y &=& i\,\%/\%\, s_x,
 \end{eqnarray*}
 where $s_x$ is the side length of the chip (measured in number of 
 probes) in $x$-direction.
