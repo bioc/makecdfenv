@@ -17,16 +17,16 @@ make.cdf.package(filename,
   unlink       = FALSE,
   verbose      = TRUE)
 }
-%- maybe also `usage' for other objects documented here.
 \arguments{
-  \item{filename}{A character containing the filename of the CDF file -
+  \item{filename}{Character. Filename of the CDF file -
     \bold{without} the path prefix!}
-  \item{packagename}{A character containing the name wanted for the package.}
-  \item{cdf.path}{A character with the path to the CDF file.}
-  \item{package.path}{A character with the path where the package will be created.}
-  \item{author}{A character denoting what to put in the author field.}
-  \item{maintainer}{A character denoting what to put in the maintainer field.}
-  \item{version}{A character denoting what to put in the version
+  \item{packagename}{Character. Name wanted for the package.}
+  \item{cdf.path}{Character. Path to the CDF file.}
+  \item{package.path}{Character. Path where the package will be created.}
+  \item{compress}{Logical. If \code{TRUE}, CDF file is compressed.}
+  \item{author}{Character. What to put in the \code{author} field of the package.}
+  \item{maintainer}{Character. What to put in the \code{maintainer} field of the package.}
+  \item{version}{Character. What to put in the version
    field. Should be a of the form \code{x.x.x}.}
   \item{unlink}{Logical. If \code{TRUE}, and a package directory exists
    already in \code{package.path}, that is overwritten.}

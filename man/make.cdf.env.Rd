@@ -11,15 +11,16 @@ make.cdf.env(filename,
              verbose = TRUE)
 }
 \arguments{
-  \item{filename}{A character containing the filename of the CDF file -
+  \item{filename}{Character. Filename of the CDF file -
     \bold{without} the path prefix!}
-  \item{cdf.path}{A character with the path to the CDF file.}
-  \item{return.env.only}{A logical. If \code{TRUE} (the default),
+  \item{cdf.path}{Character. Path to the CDF file.}
+  \item{compress}{Logical. If \code{TRUE}, CDF file is compressed.}
+  \item{return.env.only}{Logical. If \code{TRUE} (the default),
     then the function returns an environment. Otherwise, a list with
     two elements, the first being the environment, and the second being
     a data structure that contains additional information needed for
     the package builder (see details, and vignette).}
-  \item{verbose}{A logical. If \code{TRUE} messages are shown.}
+  \item{verbose}{Logical. If \code{TRUE}, messages are shown.}
 }
 
 \value{Depending on the argument \code{return.env.only},
