@@ -1,11 +1,11 @@
-\name{getInfoInAffyFile}
-\alias{getInfoInAffyFile}
+\name{getInfoInFile}
+\alias{getInfoInFile}
 \title{get information from Affymetrix data files}
 \description{
   Get specific information stored in Affymetrix data files (CEL or CDF).
 }
 \usage{
-getInfoInAffyFile(filename, type, unit, property, compress = FALSE)
+getInfoInFile(filename, type, unit, property, compress = FALSE)
 }
 \arguments{
   \item{filename}{a file name }

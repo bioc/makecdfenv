@@ -1,23 +1,19 @@
 \name{read.cdffile}
 \alias{read.cdffile}
 \title{Read a CDF file}
-\description{
-  Read the data contained in a CDF file.
-}
-\usage{
-read.cdffile(file, compress=TRUE)
-}
+\description{Read the data contained in a CDF file}
+\usage{read.cdffile(file, compress=TRUE)}
 \arguments{
   \item{file}{the name of the CDF file}
-  \item{compress}{whether the file is compressed or not...}
+  \item{compress}{whether the file is compressed or not}
 }
 \value{
-  Return a \code{\link[affy:Cdf-class]{Cdf}} object.
+  Returns a \code{\link{Cdf-class}} object.
 }
 \warnings{
   A \code{Cdf} object is not a cdf environment, which will be needed for
   the computation of expression values from the probe intensities in a
-  \code{AffyBatch}. \code{Cdf} is for you if you are doing probe level work.
+  \code{AffyBatch}. 
 }
 \details{
   In order to save memory, the name corresponding to each value in the
@@ -30,9 +26,10 @@ read.cdffile(file, compress=TRUE)
   could be saved here).
 }
 \author{Laurent Gautier (laurent@cbs.dtu.dk)}
-\seealso{
-  \code{\link[affy:Cdf-class]{Cdf}}
-}
-
+\seealso{\code{\link{Cdf-class}}}
 \keyword{file}
-
+\examples{
+fn <- file.path(.path.package("makecdfenv"), "data", "Hu6800.CDF.gz")
+mycdf <- read.cdffile(fn, compress=TRUE)
+mycdf
+}  

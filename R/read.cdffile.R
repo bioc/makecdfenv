@@ -1,21 +1,12 @@
 read.cdffile <- function(file, compress=getOption("BioC")$affy$compress.cdf) {
-
   ff <- new("Cdf")
 
-  ## ---------
-  ## the extra operation on the string are done to match what is done
-  ## is 'whatcdf'
-  tmp <- getInfoInAffyFile(file, "CDF", unit="Chip", property="Name", compress=compress)
-
-  
+  tmp <- getInfoInFile(file, "CDF", unit="Chip", property="Name", compress=compress)
   tmp <- substr(tmp, 1, nchar(tmp)-2)
-  ##we will use cleancdfname later
-  ##tmp <- gsub("_","",tmp)
-  ##tmp <- tolower(tmp)
+
   ff@cdfName <- tmp
-  ##----------
-  tmp <- .Call("readCDFfile", as.character(file),
-               as.integer(3), as.integer(compress))
+
+  tmp <- .Call("readCDFfile", as.character(file), as.integer(3), as.integer(compress))
   tmp[tmp == ""] <- NA
   mydim <- dim(tmp)
 

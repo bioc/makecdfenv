@@ -1,4 +1,4 @@
-getInfoInAffyFile <- function(filename, type, unit, property, compress=NULL) {
+getInfoInFile <- function(filename, type, unit, property, compress=NULL) {
   if (is.null(compress) && (type == "CDF"))
     compress <- getOption("BioC")$affy$compress.cdf
   if (is.null(compress) && (type == "CEL"))
