@@ -1,5 +1,5 @@
 % -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
-%\VignetteIndexEntry{affy primer}
+%\VignetteIndexEntry{makecdfenv primer}
 %\VignetteKeywords{Preprocessing, Affymetrix}
 %\VignetteDepends{affy}
 %\VignettePackage{affy}
