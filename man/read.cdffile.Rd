@@ -33,7 +33,7 @@
 \seealso{\code{\link{Cdf-class}}}
 \keyword{file}
 \examples{
-fn <- file.path(.path.package("makecdfenv"), "data", "Hu6800.CDF.gz")
+fn <- system.file("extdata", "Hu6800.CDF.gz", package="makecdfenv")
 mycdf <- read.cdffile(fn, compress=TRUE)
 mycdf
 }  
