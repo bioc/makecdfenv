@@ -8,8 +8,9 @@ for use.}
 \usage{
 make.cdf.package(filename,
   packagename  = NULL,
-  cdf.path     = getwd(),
+  cdf.path     = getwd(),   
   package.path = getwd(),
+  compress     = FALSE,
   author       = "The Bioconductor Project",
   maintainer   = "The Bioconductor Project <bioconductor@stat.math.ethz.ch>",
   version      = library(help=makecdfenv)$info[[2]][[2]][2],

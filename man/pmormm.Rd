@@ -16,18 +16,6 @@
   in the CDF file, yet they were found informative (details to come)).
   PM are coded as TRUE, MM as FALSE and unknown as NA.
 }
-\value{
-  A matrix (see section 'details').
-}
-\author{
-  L. Gautier <laurent@cbs.dtu.dk>
-}
-\examples{
-  data(cdf.example)
-  ## or if you want to use your own CDF file
-  ## cdf.example <- read.cdffile("filename.CDF")
-
-  pm.or.mm <- pmormm(cdf.example)
-    
-}
+\value{A matrix (see section 'details').}
+\author{L. Gautier <laurent@cbs.dtu.dk>}
 \keyword{manip}

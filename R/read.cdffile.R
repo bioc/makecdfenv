@@ -1,4 +1,4 @@
-read.cdffile <- function(file, compress=getOption("BioC")$affy$compress.cdf) {
+read.cdffile <- function(file, compress=FALSE) {
   ff <- new("Cdf")
 
   tmp <- getInfoInFile(file, "CDF", unit="Chip", property="Name", compress=compress)

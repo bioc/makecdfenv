@@ -1,12 +1,15 @@
 \name{make.cdf.env}
 \alias{make.cdf.env}
 \title{CDF Environment Maker}
-\description{
-Reads in an Affymetrix chip description file (CDF) and creates an
-environment used as a hash table for the probe set mapping to 
-location.}
-\usage{make.cdf.env(filename, cdf.path = getwd(), return.env.only = TRUE,
-             verbose = TRUE)}
+\description{Reads an Affymetrix chip description file (CDF) and creates an
+environment used as a hash table for the probe set mapping to location.}
+\usage{
+make.cdf.env(filename,
+             cdf.path = getwd(),
+             compress = FALSE,
+             return.env.only = TRUE,
+             verbose = TRUE)
+}
 \arguments{
   \item{filename}{A character containing the filename of the CDF file -
     \bold{without} the path prefix!}
@@ -50,12 +53,10 @@ location.}
 \seealso{\code{\link{make.cdf.package}}}
 \author{Rafael A. Irizarry, Wolfgang Huber}
 \example{
-  ## Presently, the example is commented out since including
-  ## the file HG_U95Av2.CDF would add another 5-30 MB to the package.
-  ## If you have an example CDF file that is small enough to be
-  ## included, please let me know - wh
-   
-  ## env <- make.cdf.env("HG_U95Av2.CDF")
-
+  env <- make.cdf.env("Hu6800.CDF.gz",
+           cdf.path=file.path(.path.package("makecdfenv"), "data"),
+           compress=TRUE)
+  length(ls(env))
+  get("", env)	   
 }
 \keyword{manip}

@@ -3,17 +3,18 @@
 ##------------------------------------------------------------
 make.cdf.env <- function(filename,
                          cdf.path = getwd(),
+                         compress = FALSE,
                          return.env.only = TRUE,
                          verbose = TRUE) {
-  stopifnot(is.logical(verbose)    && is.logical(return.env.only) &&
-            is.character(cdf.path) && is.character(filename))
-  stopifnot(all(c(length(filename), length(cdf.path), length(return.env.only),
-                  length(verbose)) == 1))
+  stopifnot(is.logical(verbose), is.logical(return.env.only), is.logical(compress),
+            is.character(cdf.path), is.character(filename))
+  stopifnot(length(filename)==1, length(cdf.path)==1, length(return.env.only)==1,
+            length(verbose)==1, length(compress)==1)
   
   ## read in the cdf file into a CDF object
   if(verbose)
     cat("Reading CDF file.\n")
-  cdf <- read.cdffile(file.path(path.expand(cdf.path),filename))
+  cdf <- read.cdffile(file.path(path.expand(cdf.path),filename), compress=compress)
 
   if(verbose)
     cat("Creating CDF environment\n")
@@ -95,6 +96,7 @@ make.cdf.package<- function(filename,
                             packagename = NULL,
                             cdf.path = getwd(),
                             package.path = getwd(),
+                            compress = FALSE,
                             author = "The Bioconductor Project",
                             maintainer = "The Bioconductor Project <bioconductor@stat.math.ethz.ch>",
                             version = library(help=makecdfenv)$info[[2]][[2]][2],
@@ -106,7 +108,7 @@ make.cdf.package<- function(filename,
   if(is.null(packagename))
     packagename <- cleancdfname(sub("\.cdf$", "", filename, ignore.case=TRUE))
 
-  cdf <- make.cdf.env(filename, cdf.path=cdf.path, return.env.only=FALSE)
+  cdf <- make.cdf.env(filename, cdf.path=cdf.path, compress=compress, return.env.only=FALSE)
   assign(packagename, cdf$env)
 
   home  <- .path.package("makecdfenv")

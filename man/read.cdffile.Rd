@@ -2,7 +2,7 @@
 \alias{read.cdffile}
 \title{Read a CDF file}
 \description{Read the data contained in a CDF file}
-\usage{read.cdffile(file, compress=TRUE)}
+\usage{read.cdffile(file, compress=FALSE)}
 \arguments{
   \item{file}{the name of the CDF file}
   \item{compress}{whether the file is compressed or not}
@@ -15,7 +15,11 @@
   the computation of expression values from the probe intensities in a
   \code{AffyBatch}. 
 }
-\details{
+\details{This function is intended for use by
+  \code{\link{make.cdf.env}}, which in turn is called by
+  \code{\link{make.cdf.package}}. User may not have much
+  benefit from calling this function directly.
+  
   In order to save memory, the name corresponding to each value in the
   CEL is a factor. As in R \code{factor} objects
   cannot be also of type \code{matrix}, the names corresponding to the indices
