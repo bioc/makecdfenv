@@ -1,3 +1,4 @@
+
 make.cdf.env <- function(filename,cdf.path=getwd(),env.name="tmpenv",
                          verbose=TRUE){
   ##read in the cdf file into a CDF object
@@ -77,7 +78,7 @@ make.cdf.package<- function(filename,
   ## If no packagename given change CDF filename to packagename.
   ## cleancdfname() is defined in package 'affy'.
   if(is.null(packagename))
-    packagename <- cleancdfname(filename) 
+    packagename <- cleancdfname(sub("\.cdf$", "", filename, ignore.case=TRUE))
 
   cdf <- make.cdf.env(filename,cdf.path=cdf.path)
   assign(packagename, cdf$env)
