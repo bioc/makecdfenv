@@ -7,12 +7,14 @@ This function reads an Affymetrix chip description file (CDF) and
 creates an R package that when loaded has the CDF environment available
 for use.}
 \usage{
-make.cdf.package(filename, packagename=NULL,
-                 cdf.path = getwd(), package.path = getwd(),
-                 author = "The Bioconductor Project",
-                 maintainer = "The Bioconductor Project <bioconductor@stat.math.ethz.ch>",
-                 version = library(help = makecdfenv)$info[[2]][[2]][2],
-                 verbose = TRUE)
+make.cdf.package(filename,
+  packagename  = NULL,
+  cdf.path     = getwd(),
+  package.path = getwd(),
+  author       = "The Bioconductor Project",
+  maintainer   = "The Bioconductor Project <bioconductor@stat.math.ethz.ch>",
+  version      = library(help=makecdfenv)$info[[2]][[2]][2],
+  force        = FALSE, verbose = TRUE)
 }
 %- maybe also `usage' for other objects documented here.
 \arguments{
@@ -20,11 +22,13 @@ make.cdf.package(filename, packagename=NULL,
     assume the fullpath is *not* given.}
   \item{packagename}{a character containg the name wanted for the package}
   \item{cdf.path}{The path needed to find the CDF file.}
- \item{package.path}{The path where the package will be created.}
+  \item{package.path}{The path where the package will be created.}
   \item{author}{character denoting what to put in the author field.}
   \item{maintainer}{character denoting what to put in the maintainer field.}
   \item{version}{character denoting what to put in the version
-    field. Should be a of the form \code{x.x.x}.}
+   field. Should be a of the form \code{x.x.x}.}
+  \item{force}{logical. If \code{TRUE}, and a package directory exists
+   already in \code{package.path}, that is overwritten.}
   \item{verbose}{logical. If \code{TRUE} messages are shown.}
 }
 \details{
