@@ -121,11 +121,6 @@ make.cdf.package<- function(filename,
                 symbolValues = symbols,
                 force = force, quiet = !verbose)
 
-  for (fn in c("TITLE", "INDEX", "data/00Index"))
-    copySubstitute(file.path(file.path(home, "Code", fn)),
-                   file.path(res$pkgdir, fn),
-                   symbols)
-  
   ## save an XDR file with the environment
   save(list = packagename, file = file.path(res$pkgdir, "data", paste(packagename,".rda",sep="")))
   
