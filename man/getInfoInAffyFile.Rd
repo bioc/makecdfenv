@@ -5,7 +5,7 @@
   Get specific information stored in Affymetrix data files (CEL or CDF).
 }
 \usage{
-getInfoInFile(filename, type, unit, property, compress = FALSE)
+getInfoInFile(filename, type, unit, property, compress = NULL)
 }
 \arguments{
   \item{filename}{a file name }

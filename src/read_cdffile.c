@@ -1,5 +1,5 @@
 /**
- *  These C routines read data held CDF and CEL files, two of the data formats
+ *  These C routines read data held CDF files, one of the data formats
  *  used by a well known manufacturer of oligonucleotides arrays.
  *
  *  Permission is granted to use this for non-commercial purposes and within the affy
@@ -59,28 +59,14 @@ typedef struct {
   int compress;   /* compressed file (or not ?) */
   void *stream;   /* can be a FILE or a gzFile*/
 } affy_file;
-/* structure as handle on an Affymetrix file (currently CEL or CDF) */
+/* structure as handle on an Affymetrix file (currently CDF) */
 
 
 
 /******************EXPORT*****************/
-SEXP readCELfile(SEXP filename, SEXP indexR, SEXP compressR);
-/*
- * - filename is a character with the path to the file
- * - indexR is an integer to indicate what should be returned
- * - compressR is an integer to indicate whether the file is compressed or not
- */
-
-SEXP getIndexExtraFromCEL (SEXP filename, SEXP unitR, SEXP compressR);
-/*
- * get the masks and outliers 
- */
-
-SEXP readCDFfile(SEXP filename, SEXP indexR, SEXP compressR);
-
 SEXP getInfo(SEXP filename, SEXP filetype, SEXP unitR, SEXP propertyR, SEXP compressR);
 /*
- * get misc. info. from a CEL or CDF file
+ * get misc. info. from a CDF file
  */
 
 SEXP readQC(SEXP filename, SEXP startunitR, SEXP indexvalR, SEXP compressR);
@@ -88,14 +74,9 @@ SEXP readQC(SEXP filename, SEXP startunitR, SEXP indexvalR, SEXP compressR);
 /*****************************************/
 
 
-int static openCDFfile(affy_file *affyFile, const char *mode, char *buffy);
+int static openCDFfile(affy_file *affyFile, char *buffy);
 /**
  * Open a CDF file (making sure it looks like a CDF file)
- */
-
-int static openCELfile(affy_file *affyFile, const char *mode, char *buxffy);
-/**
- * Open a CEL file (making sure it is a CEL file)
  */
 
 int static goToUnit(const char *unit, affy_file *affyFile, char *retour);
@@ -126,16 +107,6 @@ void static close_affy_file(affy_file *affyFile);
 
 char static *readline_affy_file(char *retour, int sizeLine, affy_file *affyFile);
 
-int static fillFromLine(char *retour, int nCols, int index, SEXP celfile);
-/**
- * Fills the data structures
- * PARAMETER(s):
- * -- retour: a char pointer (a line read from input file)
- * -- nCols: number of columns in the matrix (cf celfile)
- * -- index: index for the column to use in the the input file
- * -- celfile: a matrix of mode 'numeric' (R object)
- */
-
 int static fillCharFromLine(char *retour, int nCols, int index, SEXP cdffile,
 			    char *buffer);
 /**
@@ -148,230 +119,6 @@ int static fillCharFromLine(char *retour, int nCols, int index, SEXP cdffile,
  * -- buffer: a char* buffer
  */
 
-SEXP readCELfile(SEXP filename, SEXP indexR, SEXP compressR) {
-  SEXP celfile,dim;
-
-  affy_file affyFile; /* handle structure */
-  
-  const char *mode = "r";
-  const char *param_unit = "HEADER";
-  const char *start_unit = "INTENSITY";
-  const char *axis_invert_X_prop = "Axis-invertX";
-  const char *axis_invert_Y_prop = "AxisInvertY";
-  const char *swap_XY_prop = "swapXY";
-  const char *numCells_prop = "NumberCells";
-  
-  char *retour; /* buffer for each line read */
-  int numCells; /* number of cells in the CEL */
-  int nRows;
-  int nCols;
-  int tmp;
-  int ii;       /* iterator through cells */
-  int indexVal; /* in which column are the values to return */
-  
-  affyFile.compress = INTEGER(compressR)[0];
-  affyFile.filepath = CHAR(STRING_ELT(filename,0));
-  
-  indexVal = INTEGER(indexR)[0];
-  
-  retour = R_alloc(SIZE_LINE, SIZE_CHAR);
-  
-  tmp = openCELfile(&affyFile, mode, retour);
-  
-  if (tmp == 0) {
-    close_affy_file(&affyFile);
-    error("The file %s does not appear to be a CEL file.", affyFile.filepath);
-  }
-  
-  if (tmp == -1) {
-    error("Cannot open the file %s", affyFile.filepath);
-  }
-  
-  tmp = goToUnit(param_unit, &affyFile, retour);
-  if (tmp == 0) {
-    close_affy_file(&affyFile);
-    error("File %s corrupted.", affyFile.filepath);
-  }
-  /* useless for the moment... cross-check with numCells
-   * under investigation... */
-  nCols = atoi(getProperty("Cols", &affyFile, retour));
-  nRows = atoi(getProperty("Rows", &affyFile, retour));
-  
-  /* scary properties in CEL files... */
-  if (strncmp("0", getProperty(axis_invert_X_prop, &affyFile, retour), 1) != 0) {
-    error("inverted X axis (not handled )!");
-  }
-  if (strncmp("0", getProperty(axis_invert_Y_prop, &affyFile, retour), 1) != 0) {
-    error("inverted Y axis (not handled )!");
-  }
-  if (strncmp("0", getProperty(swap_XY_prop, &affyFile, retour), 1) != 0) {
-    error("swap XY (not handled )!");
-  }
-
-  tmp = goToUnit(start_unit, &affyFile, retour);
-  
-  if (tmp == 0) {
-    close_affy_file(&affyFile);
-    error("File %s corrupted.", affyFile.filepath);
-  }
-  numCells = atoi(getProperty(numCells_prop, &affyFile, retour));
-  
-  PROTECT(celfile = NEW_NUMERIC(nRows * nCols));
-  PROTECT(dim = NEW_INTEGER(2));
-  INTEGER_POINTER(dim)[0] = nRows;
-  
-  INTEGER_POINTER(dim)[1] = nCols;
-  SET_DIM(celfile, dim);
-  
-  /*NOTE: headers are here...*/
-  readline_affy_file(retour, SIZE_LINE, &affyFile);
-  
-  for (ii=0; ii<numCells; ii++) {
-    
-    readline_affy_file(retour, SIZE_LINE, &affyFile);
-    if (retour == NULL) {
-      close_affy_file(&affyFile);
-      UNPROTECT(2);
-      
-      error("Unexpected and premature end of the file %s\n(truncated CEL file ?).", 
-	    affyFile.filepath);
-      break;
-    }
-    if (fillFromLine(retour, nCols, indexVal, celfile) == 0) {
-      
-      UNPROTECT(2);
-      close_affy_file(&affyFile);
-      error("File %s corrupted (may be around line %i).", affyFile.filepath, affyFile.lineno);
-      
-    }
-  }
-  
-  close_affy_file(&affyFile);
-  UNPROTECT(2);
-  
-  return celfile;
-}
-
-
-/** get the 'extra' stuff held in a CEL file 
-(i.e. MASKED, OUTLIERS ...) */
-SEXP getIndexExtraFromCEL (SEXP filename, SEXP unitR, SEXP compressR) {
-  SEXP extraindex, dim;
-  
-  affy_file affyFile;
-  
-  const char *mode = "r";
-
-  char *start_unit;
-  char *retour;
-  char *buffer;
-
-  int tmp;
-  int ii,x,y;
-  int numCells;
-
-  affyFile.filepath = CHAR(STRING_ELT(filename,0));
-
-  start_unit = CHAR(STRING_ELT(unitR,0));
-
-  affyFile.compress = INTEGER(compressR)[0];
-  
-  retour = R_alloc(SIZE_LINE, SIZE_CHAR);
-  buffer = R_alloc(SIZE_LINE, SIZE_CHAR);
-  
-  retour[0] = '\0';
-  
-  buffer[0] = '\0';
-  
-  tmp = openCELfile(&affyFile, mode, retour);
-  
-  if (tmp == 0) {
-    close_affy_file(&affyFile);
- 
-   error("The file %s does not appear to be a CEL file.", 
-	 affyFile.filepath);
-  }
-  
-  if (tmp == -1) {
-    
-    error("Cannot open the file %s.", affyFile.filepath);
-  }
-  
-  tmp = goToUnit(start_unit, &affyFile, retour);
-  if (tmp == 0) {
-    /* close_affy_file(&affyFile); */
-    warning("File %s has no unit '%s'.",  affyFile.filepath, start_unit);
-    numCells = 0;
-  } else {
-    numCells = atoi(getProperty("NumberCells", &affyFile, retour));
-  }
-  
-  
-  PROTECT(dim = NEW_INTEGER(2));
-  if (numCells == 0) {
-    /* DEBUG: I could not figure out how to make a matrix of dim (0,0)
-     * neither how to set NULL to the slot in Cel... the hack belows
-     * could be very dependant on the R version... */
-
-    PROTECT(extraindex = NEW_LOGICAL(1));
-    LOGICAL_POINTER(extraindex)[0] = NA_LOGICAL;
-    INTEGER_POINTER(dim)[0] = 1;
-    INTEGER_POINTER(dim)[1] = 1;
-  } else {
-    /* what's the use ? */
-    retour = getProperty("CellHeader", &affyFile, retour);
-    
-    PROTECT(extraindex = NEW_NUMERIC(numCells * (2)));
-    /* init needed ?*/
-    for (ii=0; ii<(numCells * (2)); ii++) {
-      NUMERIC_POINTER(extraindex)[ii] = (float)0.0;
-    }
-    INTEGER_POINTER(dim)[0] = numCells;
-    INTEGER_POINTER(dim)[1] = 2; /* only two columns to hold x and y indexes */
-  } 
-
-  SET_DIM(extraindex, dim);  
-
-  for (ii=0; ii<numCells; ii++) {
-    
-    readline_affy_file(retour, SIZE_LINE, &affyFile);
-    
-    if (retour == NULL) {
-      
-      close_affy_file(&affyFile);
-      UNPROTECT(2);
-      
-      error("Unexpected and premature end of the file %s\n (truncated CDF file ?).", affyFile.filepath);
-      break;
-    }
-    
-    if (strlen(retour) <= 1) {
-      readline_affy_file(retour, SIZE_LINE, &affyFile);
-    }
-    
-    /* DEBUG */
-    /* forced to use 'buffer'... can't figure out why...*/
-      
-    buffer = retour;
-    x = atof(buffer);
-    
-    buffer = (char *)index(buffer,'\t') + 1;
-    
-    y = atof(buffer);
-    
-    
-    NUMERIC_POINTER(extraindex)[ii + (numCells) * 0] = x + 1; /* +1 one needed as indexing */
-    NUMERIC_POINTER(extraindex)[ii + (numCells) * 1] = y + 1; /* start at 1 in R */
-  }
-  
-  
-  close_affy_file(&affyFile);
-
-  UNPROTECT(2);
-
-  return extraindex;  
-}
-
 /*
  * The function called from R 
  * - filename is a character with the path to the file
@@ -383,7 +130,6 @@ SEXP readCDFfile(SEXP filename, SEXP indexR, SEXP compressR) {
   SEXP cdffile,dim;
   affy_file affyFile;
   
-  const char *mode = "r";
   const char *param_unit = "Chip";
   const char *start_unit = "Unit";
   char *retour;
@@ -406,7 +152,7 @@ SEXP readCDFfile(SEXP filename, SEXP indexR, SEXP compressR) {
   retour = R_alloc(SIZE_LINE, SIZE_CHAR);
   buffer = R_alloc(SIZE_LINE, SIZE_CHAR);
   
-  tmp = openCDFfile(&affyFile, mode, retour);
+  tmp = openCDFfile(&affyFile, retour);
   
   if (tmp == 0) {
     
@@ -510,9 +256,6 @@ SEXP readCDFfile(SEXP filename, SEXP indexR, SEXP compressR) {
 
 
 SEXP getInfo(SEXP filename, SEXP filetype, SEXP unitR, SEXP propertyR, SEXP compressR) {
-
-  const char *mode = "r";
-
   SEXP value;
   affy_file affyFile;
   int tmp;
@@ -530,23 +273,14 @@ SEXP getInfo(SEXP filename, SEXP filetype, SEXP unitR, SEXP propertyR, SEXP comp
 
   tmp = 0;
   
-  /** "filetype" can only be "CDF" or "CEL" */
   if (strncmp(CHAR(STRING_ELT(filetype,0)), "CDF", 2) == 0) {
-    tmp = openCDFfile(&affyFile, mode, retour);
+    tmp = openCDFfile(&affyFile, retour);
     if (tmp == 0) {
       close_affy_file(&affyFile);
       error("The file %s does not appear to be a CDF file.", affyFile.filepath);
     }
   }
   
-  if (strncmp(CHAR(STRING_ELT(filetype, 0)), "CEL", 2) == 0) {
-    tmp = openCELfile(&affyFile, mode, retour);
-    if (tmp == 0) {
-      close_affy_file(&affyFile);
-      error("The file %s does not appear to be a CEL file.", affyFile.filepath);
-    }
-  } 
-
   if (tmp == 0) {
     error("Unknown filetype !");
   }
@@ -569,48 +303,7 @@ SEXP getInfo(SEXP filename, SEXP filetype, SEXP unitR, SEXP propertyR, SEXP comp
   return(value);
 }
 
-int static openCELfile(affy_file *affyFile, const char *mode, char *buffy) {
-  int ok;
-  char *celfileHEADER;
-  
-  celfileHEADER = "[CEL]";
-  ok = 0;
-  
-  if (affyFile->compress == 1) {
-#if defined HAVE_ZLIB
-    affyFile->stream = gzopen(affyFile->filepath, mode);
-    
-    if (affyFile->stream == NULL) {
-      ok = -1;
-    } else {
-      gzgets(affyFile->stream, buffy, SIZE_LINE);
-      if (strncmp(celfileHEADER, buffy, 4) == 0) {
-	ok = 1;
-	gzrewind(affyFile->stream);
-      }
-    }
-#else    
-error("Compression not supported on your system.");
-#endif
-  } else { 
-    affyFile->stream = fopen(affyFile->filepath, mode);
- 
-   if (affyFile->stream == NULL) {
-      ok = -1;
-    } else {
-      fgets(buffy, SIZE_LINE, affyFile->stream);
-    }
-    if (strncmp(celfileHEADER, buffy, 4) == 0) {
-      ok = 1;      
-      rewind(affyFile->stream);
-    }
-  }
-  affyFile->lineno = 0;
-  
-  return ok;
-}
-
-int static openCDFfile(affy_file *affyFile, const char *mode, char *buffy) {
+int static openCDFfile(affy_file *affyFile, char *buffy) {
   int ok;
   char *cdffileHEADER;
   
@@ -620,7 +313,7 @@ int static openCDFfile(affy_file *affyFile, const char *mode, char *buffy) {
 
   if (affyFile->compress == 1) {
 #if defined HAVE_ZLIB
-    affyFile->stream = gzopen(affyFile->filepath, mode);
+    affyFile->stream = gzopen(affyFile->filepath, "rb");
     
     if (affyFile->stream == NULL) {
       ok = -1;
@@ -638,7 +331,7 @@ int static openCDFfile(affy_file *affyFile, const char *mode, char *buffy) {
 error("Compression not supported on your system.");
 #endif
   } else {    
-    affyFile->stream = fopen(affyFile->filepath, mode);
+    affyFile->stream = fopen(affyFile->filepath, "r");
     
     if (affyFile->stream == NULL) {
       ok = -1;
@@ -692,40 +385,6 @@ char static *readline_affy_file(char *retour, int sizeLine, affy_file *affyFile)
 #endif
   return(res);
 }
-
-int static fillFromLine(char *retour, int nCols, int indexVal, SEXP celfile) {
-  
-  int x;
-  int y;
-  double val;
-  
-  x = atoi(retour);
-  
-  retour = (char *)index(retour,'\t');
-  
-  if (retour == NULL) 
-    { return 0; }
-  
-  y = atoi(++retour);
-  
-  retour = (char *)index(retour,'\t');
-
-  if (retour == NULL) { return 0; }
-  
-  if (indexVal == 2) {
-    retour = (char *)index(++retour, '\t');
-  }
-  
-  if (retour == NULL) { return 0; }
-  
-  val = atof(++retour);
-  /*SET_ELEMENT(celfile, x + nCols * y, val); */
-  
-  NUMERIC_POINTER(celfile)[x + nCols * y] = val;
-  return 1;
-}
-
-
 
 int static fillCharFromLine(char *retour, int nCols, int indexVal, SEXP cdffile, char *buffer) {
   int x;
@@ -903,8 +562,6 @@ char static *getProperty(const char *unit, affy_file *affyFile, char *buffy)
  * buffer2=buffer
  */ 
 SEXP readQC(SEXP filename, SEXP startunitR, SEXP indexvalR, SEXP compressR) {
- 
-  const char *mode = "r";
   const char *param_unit = "Chip";
    
   SEXP qcindex,dim;
@@ -941,7 +598,7 @@ SEXP readQC(SEXP filename, SEXP startunitR, SEXP indexvalR, SEXP compressR) {
   buffer2[0] = '\0';
   
   /* --- open the CDF + sanity checks --- */
-  tmp = openCDFfile(&affyFile, mode, retour);   
+  tmp = openCDFfile(&affyFile, retour);   
   if (tmp == 0) {
     error("The file %s does not appear to be a CDF file.", affyFile.filepath);
   }
