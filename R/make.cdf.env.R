@@ -98,7 +98,7 @@ make.cdf.package<- function(filename,
                             author = "The Bioconductor Project",
                             maintainer = "The Bioconductor Project <bioconductor@stat.math.ethz.ch>",
                             version = library(help=makecdfenv)$info[[2]][[2]][2],
-                            force   = FALSE,
+                            unlink  = FALSE,
                             verbose = TRUE) {
   
   ## If no packagename given change CDF filename to packagename.
@@ -124,7 +124,7 @@ make.cdf.package<- function(filename,
                 destinationDir = path.expand(package.path),
                 originDir  = file.path(home, "Code"),
                 symbolValues = symbols,
-                force = force, quiet = !verbose)
+                unlink = unlink, quiet = !verbose)
 
   ## save an XDR file with the environment
   save(list = packagename, file = file.path(res$pkgdir, "data", paste(packagename,".rda",sep="")))

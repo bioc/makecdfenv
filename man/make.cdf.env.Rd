@@ -51,10 +51,9 @@ location.}
 \author{Rafael A. Irizarry, Wolfgang Huber}
 \example{
   ## Presently, the example is commented out since including
-  ## the file HG_U95Av2.CDF would add another 30 MB to the package.
-  ## Compression would put this down to 5 MB but is not supported on
-  ## all platforms. If you have an example CDF file that is small
-  ## enough to be included, please let me know - wh
+  ## the file HG_U95Av2.CDF would add another 5-30 MB to the package.
+  ## If you have an example CDF file that is small enough to be
+  ## included, please let me know - wh
    
   ## env <- make.cdf.env("HG_U95Av2.CDF")
 

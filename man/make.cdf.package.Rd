@@ -13,7 +13,8 @@ make.cdf.package(filename,
   author       = "The Bioconductor Project",
   maintainer   = "The Bioconductor Project <bioconductor@stat.math.ethz.ch>",
   version      = library(help=makecdfenv)$info[[2]][[2]][2],
-  force        = FALSE, verbose = TRUE)
+  unlink       = FALSE,
+  verbose      = TRUE)
 }
 %- maybe also `usage' for other objects documented here.
 \arguments{
@@ -26,7 +27,7 @@ make.cdf.package(filename,
   \item{maintainer}{A character denoting what to put in the maintainer field.}
   \item{version}{A character denoting what to put in the version
    field. Should be a of the form \code{x.x.x}.}
-  \item{force}{Logical. If \code{TRUE}, and a package directory exists
+  \item{unlink}{Logical. If \code{TRUE}, and a package directory exists
    already in \code{package.path}, that is overwritten.}
   \item{verbose}{Logical. If \code{TRUE} messages are shown.}
 }
@@ -55,10 +56,9 @@ If success, the function returns the name of the created package.
 \author{Rafael A. Irizarry, Wolfgang Huber}
 \example{
   ## Presently, the example is commented out since including
-  ## the file HG_U95Av2.CDF would add another 30 MB to the package.
-  ## Compression would put this down to 5 MB but is not supported on
-  ## all platforms. If you have an example CDF file that is small
-  ## enough to be included, please let me know - wh
+  ## the file HG_U95Av2.CDF would add another 5-30 MB to the package.
+  ## If you have an example CDF file that is small enough to be
+  ## included, please let me know - wh
    
   ## make.cdf.package("HG_U95Av2.CDF")
 }
