@@ -1,6 +1,6 @@
 Package: makecdfenv
-Version: 1.5.0
-Date: 2005-2-12
+Version: 1.5.1
+Date: 2005-4-22
 Title: CDF Environment Maker
 Author: Rafael A. Irizarry <rafa@jhu.edu>, Laurent Gautier <laurent@cbs.dtu.dk>, Wolfgang Huber <w.huber@dkfz-heidelberg.de>, Ben Bolstad <bolstad@stat.berkeley.edu>
 Maintainer: Rafael A. Irizarry <rafa@jhu.edu>

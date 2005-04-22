@@ -2,13 +2,18 @@
  **
  ** File: read_cdf_xda.c
  **
+ ** Implementation by: B. M. Bolstad
+ **
  ** A parser designed to read the binary format cdf files
  **
  ** Implemented based on documentation available from Affymetrix
  **
+ ** Implementation begun 2005.
+ **
  ** Modification Dates
  ** Feb 4 - Initial version
  ** Feb 5 - A bunch of hacks for SNP chips.
+ ** Apr 20
  **
  ****************************************************************/
 
@@ -919,20 +924,6 @@ SEXP ReadCDFFile(SEXP filename){
 	UNPROTECT(3);
 	which_psname++;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       } else {
 	error("makecdfenv does not currently know how to handle cdf files of this type (genotyping with blocks != 1 or 4.)"); 	
       }
@@ -982,7 +973,379 @@ SEXP ReadCDFFile(SEXP filename){
 
 
 
+/* This function is for reading in the entire binary cdf file and then 
+ * returing the structure in a complex list object.
+ * The fullstructure argument is expected to be a BOOLEAN. If TRUE the
+ * entire contents of the CDF file are returned.
+ * If False, a modified CDFENV style structure is returned
+ */
+
+
+
+SEXP ReadCDFFileIntoRList(SEXP filename,SEXP fullstructure){
+
+  SEXP CDFInfo;  /* this is the object that will be returned */
+  SEXP CDFInfoNames;
+  SEXP HEADER;  /* Will store the header information */
+  SEXP HEADERNames;
+  SEXP Dimensions;
+  SEXP DimensionsNames;
+  SEXP REFSEQ;  /* Resequencing reference sequence */
+  SEXP UNITNAMES;
+
+  SEXP FILEPOSITIONS;
+  SEXP FILEPOSITIONSQC;
+  SEXP FILEPOSITIONSUNITS;
+  SEXP FILEPOSITIONSNames;
+
+  SEXP QCUNITS;
+  SEXP QCUNITSsub;
+  SEXP QCUNITSsubNames;
+  SEXP QCHEADER;
+  SEXP QCHEADERNames;
+  SEXP QCUNITSProbeInfo;
+  SEXP QCUNITSProbeInfoX;
+  SEXP QCUNITSProbeInfoY;
+  SEXP QCUNITSProbeInfoPL;
+  SEXP QCUNITSProbeInfoPMFLAG;
+  SEXP QCUNITSProbeInfoBGFLAG;
+  SEXP QCUNITSProbeInfoNames;
+  SEXP QCUNITSProbeInforow_names;
+
+  SEXP UNITS;
+  SEXP tmpUNIT;
+  SEXP tmpUNITNames;
+  SEXP UNITSHeader;
+  SEXP UNITSHeaderNames;
+  SEXP tmpUNITSBlock;
+  SEXP UNITSBlock;
+  SEXP UNITSBlockNames;
+  SEXP UNITSBlockHeader;
+  SEXP UNITSBlockHeaderNames;
+  SEXP UNITSBlockInfo;
+  SEXP UNITSBlockInfoNames;
+  SEXP UNITSBlockInforow_names;
+  SEXP UNITSBlockAtom ;
+  SEXP UNITSBlockX;
+  SEXP UNITSBlockY;
+  SEXP UNITSBlockIndexPos;
+  SEXP UNITSBlockPbase;
+  SEXP UNITSBlockTbase;
+  
 
 
 
 
+
+
+
+  char buf[10];
+  int i,j,k;
+
+  cdf_xda my_cdf;
+  char *cur_file_name;
+  cur_file_name = CHAR(VECTOR_ELT(filename,0));
+
+  /* Read in the xda style CDF file into memory */
+  if (!read_cdf_xda(cur_file_name,&my_cdf)){
+    error("Problem reading binary cdf file %s. Possibly corrupted or truncated?\n",cur_file_name);
+  }
+  
+
+  if (asInteger(fullstructure)){
+    /* return the full structure */
+    PROTECT(CDFInfo = allocVector(VECSXP,5));
+
+    PROTECT(CDFInfoNames = allocVector(STRSXP,5));
+    SET_VECTOR_ELT(CDFInfoNames,0,mkChar("Header"));
+    SET_VECTOR_ELT(CDFInfoNames,1,mkChar("UnitNames"));
+    SET_VECTOR_ELT(CDFInfoNames,2,mkChar("FilePositions"));
+    SET_VECTOR_ELT(CDFInfoNames,3,mkChar("QCUnits"));
+    SET_VECTOR_ELT(CDFInfoNames,4,mkChar("Units"));
+    setAttrib(CDFInfo,R_NamesSymbol,CDFInfoNames);
+    UNPROTECT(1);
+
+    PROTECT(HEADER  = allocVector(VECSXP,2));
+    PROTECT(HEADERNames = allocVector(STRSXP,2));
+    SET_VECTOR_ELT(HEADERNames,0,mkChar("Dimensions"));
+    SET_VECTOR_ELT(HEADERNames,1,mkChar("ReseqRefSeq"));
+    setAttrib(HEADER,R_NamesSymbol,HEADERNames);
+    UNPROTECT(1);
+
+    PROTECT(Dimensions = allocVector(REALSXP,7));
+    NUMERIC_POINTER(Dimensions)[0] = (double)my_cdf.header.magicnumber;
+    NUMERIC_POINTER(Dimensions)[1] = (double)my_cdf.header.version_number;
+    NUMERIC_POINTER(Dimensions)[2] = (double)my_cdf.header.cols;
+    NUMERIC_POINTER(Dimensions)[3] = (double)my_cdf.header.rows;
+    NUMERIC_POINTER(Dimensions)[4] = (double)my_cdf.header.n_qc_units;
+    NUMERIC_POINTER(Dimensions)[5] = (double)my_cdf.header.n_units;
+    NUMERIC_POINTER(Dimensions)[6] = (double)my_cdf.header.len_ref_seq;
+    
+    PROTECT(DimensionsNames = allocVector(STRSXP,7));
+    SET_VECTOR_ELT(DimensionsNames,0,mkChar("MagicNumber"));
+    SET_VECTOR_ELT(DimensionsNames,1,mkChar("VersionNumber"));
+    SET_VECTOR_ELT(DimensionsNames,2,mkChar("Cols"));
+    SET_VECTOR_ELT(DimensionsNames,3,mkChar("Rows"));
+    SET_VECTOR_ELT(DimensionsNames,4,mkChar("n.QCunits"));
+    SET_VECTOR_ELT(DimensionsNames,5,mkChar("n.units"));
+    SET_VECTOR_ELT(DimensionsNames,6,mkChar("LenRefSeq"));
+    setAttrib(Dimensions,R_NamesSymbol,DimensionsNames);
+    SET_VECTOR_ELT(HEADER,0,Dimensions);
+    UNPROTECT(2);
+    
+    PROTECT(REFSEQ = allocVector(STRSXP,1));
+    SET_VECTOR_ELT(REFSEQ,0,mkChar(my_cdf.header.ref_seq));
+    SET_VECTOR_ELT(HEADER,1,REFSEQ);
+    UNPROTECT(1);
+
+    SET_VECTOR_ELT(CDFInfo,0,HEADER);
+    UNPROTECT(1);
+    
+    PROTECT(UNITNAMES = allocVector(STRSXP,my_cdf.header.n_units));
+    for (i =0; i < my_cdf.header.n_units; i++){
+      SET_VECTOR_ELT(UNITNAMES,i,mkChar(my_cdf.probesetnames[i]));
+    }
+    SET_VECTOR_ELT(CDFInfo,1,UNITNAMES);
+    UNPROTECT(1);
+
+    PROTECT(FILEPOSITIONS  = allocVector(VECSXP,2));
+    PROTECT(FILEPOSITIONSQC = allocVector(REALSXP,my_cdf.header.n_qc_units));
+    PROTECT(FILEPOSITIONSUNITS = allocVector(REALSXP,my_cdf.header.n_units));
+    for (i =0; i < my_cdf.header.n_qc_units; i++){
+      NUMERIC_POINTER(FILEPOSITIONSQC)[i] = (double)my_cdf.qc_start[i];
+    }
+    for (i =0; i < my_cdf.header.n_units; i++){
+      NUMERIC_POINTER(FILEPOSITIONSUNITS)[i] = (double)my_cdf.units_start[i];
+    }
+    SET_VECTOR_ELT(FILEPOSITIONS,0,FILEPOSITIONSQC);
+    SET_VECTOR_ELT(FILEPOSITIONS,1,FILEPOSITIONSUNITS);
+    PROTECT(FILEPOSITIONSNames  = allocVector(STRSXP,2));
+    SET_VECTOR_ELT(FILEPOSITIONSNames,0,mkChar("FilePosQC"));
+    SET_VECTOR_ELT(FILEPOSITIONSNames,1,mkChar("FilePosUnits"));
+    setAttrib(FILEPOSITIONS,R_NamesSymbol,FILEPOSITIONSNames);
+    SET_VECTOR_ELT(CDFInfo,2,FILEPOSITIONS);
+    UNPROTECT(4);
+    
+    PROTECT(QCUNITS = allocVector(VECSXP,my_cdf.header.n_qc_units));
+    for (i =0; i < my_cdf.header.n_qc_units; i++){
+      PROTECT(QCUNITSsub = allocVector(VECSXP,2));
+      PROTECT(QCUNITSsubNames= allocVector(STRSXP,2));
+      SET_VECTOR_ELT(QCUNITSsubNames,0,mkChar("QCUnitHeader"));
+      SET_VECTOR_ELT(QCUNITSsubNames,1,mkChar("QCUnitInfo"));
+      setAttrib(QCUNITSsub,R_NamesSymbol,QCUNITSsubNames);
+
+      PROTECT(QCHEADER = allocVector(REALSXP,2));
+      NUMERIC_POINTER(QCHEADER)[0] = (double)my_cdf.qc_units[i].type;
+      NUMERIC_POINTER(QCHEADER)[1] = (double)my_cdf.qc_units[i].n_probes;
+      PROTECT(QCHEADERNames = allocVector(STRSXP,2));
+      SET_VECTOR_ELT(QCHEADERNames,0,mkChar("Type"));
+      SET_VECTOR_ELT(QCHEADERNames,1,mkChar("n.probes"));
+
+      setAttrib(QCHEADER,R_NamesSymbol,QCHEADERNames);
+      SET_VECTOR_ELT(QCUNITSsub,0,QCHEADER);
+
+
+      PROTECT(QCUNITSProbeInfo = allocVector(VECSXP,5));
+      PROTECT(QCUNITSProbeInfoX = allocVector(REALSXP,my_cdf.qc_units[i].n_probes));
+      PROTECT(QCUNITSProbeInfoY = allocVector(REALSXP,my_cdf.qc_units[i].n_probes));
+      PROTECT(QCUNITSProbeInfoPL = allocVector(REALSXP,my_cdf.qc_units[i].n_probes));
+      PROTECT(QCUNITSProbeInfoPMFLAG = allocVector(REALSXP,my_cdf.qc_units[i].n_probes));
+      PROTECT(QCUNITSProbeInfoBGFLAG = allocVector(REALSXP,my_cdf.qc_units[i].n_probes));
+
+      for (j=0; j < my_cdf.qc_units[i].n_probes; j++){
+	NUMERIC_POINTER(QCUNITSProbeInfoX)[j] = (double)my_cdf.qc_units[i].qc_probes[j].x;	
+	NUMERIC_POINTER(QCUNITSProbeInfoY)[j] = (double)my_cdf.qc_units[i].qc_probes[j].y;
+	NUMERIC_POINTER(QCUNITSProbeInfoPL)[j] = (double)my_cdf.qc_units[i].qc_probes[j].probelength;
+	NUMERIC_POINTER(QCUNITSProbeInfoPMFLAG)[j] = (double)my_cdf.qc_units[i].qc_probes[j].pmflag;
+	NUMERIC_POINTER(QCUNITSProbeInfoBGFLAG)[j] = (double)my_cdf.qc_units[i].qc_probes[j].bgprobeflag;
+      }
+
+      SET_VECTOR_ELT(QCUNITSProbeInfo,0,QCUNITSProbeInfoX);
+      SET_VECTOR_ELT(QCUNITSProbeInfo,1,QCUNITSProbeInfoY);
+      SET_VECTOR_ELT(QCUNITSProbeInfo,2,QCUNITSProbeInfoPL);
+      SET_VECTOR_ELT(QCUNITSProbeInfo,3,QCUNITSProbeInfoPMFLAG);
+      SET_VECTOR_ELT(QCUNITSProbeInfo,4,QCUNITSProbeInfoBGFLAG);
+
+      PROTECT(QCUNITSProbeInfoNames = allocVector(STRSXP,5));
+      SET_VECTOR_ELT(QCUNITSProbeInfoNames,0,mkChar("x"));
+      SET_VECTOR_ELT(QCUNITSProbeInfoNames,1,mkChar("y"));
+      SET_VECTOR_ELT(QCUNITSProbeInfoNames,2,mkChar("ProbeLength"));
+      SET_VECTOR_ELT(QCUNITSProbeInfoNames,3,mkChar("PMFlag"));
+      SET_VECTOR_ELT(QCUNITSProbeInfoNames,4,mkChar("BGProbeFlag"));
+
+      setAttrib(QCUNITSProbeInfo,R_NamesSymbol,QCUNITSProbeInfoNames);
+
+      PROTECT(QCUNITSProbeInforow_names= allocVector(STRSXP,my_cdf.qc_units[i].n_probes)); 
+      
+      for (j=0; j < my_cdf.qc_units[i].n_probes; j++){
+	sprintf(buf, "%d", j+1);
+	SET_VECTOR_ELT(QCUNITSProbeInforow_names,j,mkChar(buf));
+      }
+
+
+
+      setAttrib(QCUNITSProbeInfo, R_RowNamesSymbol, QCUNITSProbeInforow_names);
+
+
+      setAttrib(QCUNITSProbeInfo,R_ClassSymbol,mkString("data.frame"));
+
+      SET_VECTOR_ELT(QCUNITSsub,1,QCUNITSProbeInfo);
+      SET_VECTOR_ELT(QCUNITS,i,QCUNITSsub);
+      UNPROTECT(12);
+    }
+    SET_VECTOR_ELT(CDFInfo,3,QCUNITS);
+    UNPROTECT(1);
+
+    
+    PROTECT(UNITS = allocVector(VECSXP,my_cdf.header.n_units));
+    for (i =0; i < my_cdf.header.n_units; i++){
+      PROTECT(tmpUNIT = allocVector(VECSXP,2));
+      PROTECT(tmpUNITNames = allocVector(STRSXP,2));
+      SET_VECTOR_ELT(tmpUNITNames,0,mkChar("UnitHeader"));
+      SET_VECTOR_ELT(tmpUNITNames,1,mkChar("Block"));
+      setAttrib(tmpUNIT,R_NamesSymbol,tmpUNITNames);
+
+
+      PROTECT(UNITSHeader = allocVector(REALSXP,7));
+      PROTECT(UNITSHeaderNames = allocVector(STRSXP,7));
+      SET_VECTOR_ELT(UNITSHeaderNames,0,mkChar("UnitType"));
+      SET_VECTOR_ELT(UNITSHeaderNames,1,mkChar("Direction"));
+      SET_VECTOR_ELT(UNITSHeaderNames,2,mkChar("n.atoms"));
+      SET_VECTOR_ELT(UNITSHeaderNames,3,mkChar("n.blocks"));
+      SET_VECTOR_ELT(UNITSHeaderNames,4,mkChar("n.cells"));
+      SET_VECTOR_ELT(UNITSHeaderNames,5,mkChar("UnitNumber"));
+      SET_VECTOR_ELT(UNITSHeaderNames,6,mkChar("n.cellsperatom"));
+
+      setAttrib(UNITSHeader,R_NamesSymbol,UNITSHeaderNames);
+
+      NUMERIC_POINTER(UNITSHeader)[0] = (double)my_cdf.units[i].unittype;
+      NUMERIC_POINTER(UNITSHeader)[1] = (double)my_cdf.units[i].direction;
+      NUMERIC_POINTER(UNITSHeader)[2] = (double)my_cdf.units[i].natoms;
+      NUMERIC_POINTER(UNITSHeader)[3] = (double)my_cdf.units[i].nblocks;
+      NUMERIC_POINTER(UNITSHeader)[4] = (double)my_cdf.units[i].ncells;
+      NUMERIC_POINTER(UNITSHeader)[5] = (double)my_cdf.units[i].unitnumber;
+      NUMERIC_POINTER(UNITSHeader)[6] = (double)my_cdf.units[i].ncellperatom;
+
+      PROTECT(tmpUNITSBlock = allocVector(VECSXP,my_cdf.units[i].nblocks));
+      for (j=0; j < my_cdf.units[i].nblocks; j++){
+	PROTECT(UNITSBlock = allocVector(VECSXP,3));
+	PROTECT(UNITSBlockNames = allocVector(STRSXP,3));
+	SET_VECTOR_ELT(UNITSBlockNames,0,mkChar("Header"));
+	SET_VECTOR_ELT(UNITSBlockNames,1,mkChar("Name"));
+	SET_VECTOR_ELT(UNITSBlockNames,2,mkChar("UnitInfo"));
+	setAttrib(UNITSBlock,R_NamesSymbol,UNITSBlockNames);
+
+	PROTECT(UNITSBlockHeader = allocVector(REALSXP,6));
+	PROTECT(UNITSBlockHeaderNames= allocVector(VECSXP,6));
+	SET_VECTOR_ELT(UNITSBlockHeaderNames,0,mkChar("n.atoms"));
+	SET_VECTOR_ELT(UNITSBlockHeaderNames,1,mkChar("n.cells"));
+	SET_VECTOR_ELT(UNITSBlockHeaderNames,2,mkChar("n.cellsperatom"));
+	SET_VECTOR_ELT(UNITSBlockHeaderNames,3,mkChar("Direction"));
+	SET_VECTOR_ELT(UNITSBlockHeaderNames,4,mkChar("firstatom"));
+	SET_VECTOR_ELT(UNITSBlockHeaderNames,5,mkChar("unused"));
+	
+	NUMERIC_POINTER(UNITSBlockHeader)[0] = (double)my_cdf.units[i].unit_block[j].natoms;
+	NUMERIC_POINTER(UNITSBlockHeader)[1] = (double)my_cdf.units[i].unit_block[j].ncells;
+	NUMERIC_POINTER(UNITSBlockHeader)[2] = (double)my_cdf.units[i].unit_block[j].ncellperatom;
+	NUMERIC_POINTER(UNITSBlockHeader)[3] = (double)my_cdf.units[i].unit_block[j].direction;
+	NUMERIC_POINTER(UNITSBlockHeader)[4] = (double)my_cdf.units[i].unit_block[j].firstatom;
+	NUMERIC_POINTER(UNITSBlockHeader)[5] = (double)my_cdf.units[i].unit_block[j].unused;
+	
+
+	setAttrib(UNITSBlockHeader,R_NamesSymbol,UNITSBlockHeaderNames);
+	
+	SET_VECTOR_ELT(UNITSBlock,0,UNITSBlockHeader);
+	
+	SET_VECTOR_ELT(UNITSBlock,1,mkString(my_cdf.units[i].unit_block[j].blockname));
+
+	PROTECT(UNITSBlockInfo = allocVector(VECSXP,6));
+	
+	PROTECT(UNITSBlockInfoNames = allocVector(STRSXP,6));
+	SET_VECTOR_ELT(UNITSBlockInfoNames,0,mkChar("atom.number"));
+	SET_VECTOR_ELT(UNITSBlockInfoNames,1,mkChar("x"));
+	SET_VECTOR_ELT(UNITSBlockInfoNames,2,mkChar("y"));
+	SET_VECTOR_ELT(UNITSBlockInfoNames,3,mkChar("index.position"));
+	SET_VECTOR_ELT(UNITSBlockInfoNames,4,mkChar("pbase"));
+	SET_VECTOR_ELT(UNITSBlockInfoNames,5,mkChar("tbase"));
+
+	setAttrib(UNITSBlockInfo,R_NamesSymbol,UNITSBlockInfoNames);
+	
+
+	PROTECT(UNITSBlockInforow_names = allocVector(STRSXP,my_cdf.units[i].unit_block[j].ncells)); 
+      
+	for (k=0; k < my_cdf.units[i].unit_block[j].ncells; k++){
+	  sprintf(buf, "%d", k+1);
+	  SET_VECTOR_ELT(UNITSBlockInforow_names,k,mkChar(buf));
+	}
+	
+	PROTECT(UNITSBlockAtom = allocVector(INTSXP,my_cdf.units[i].unit_block[j].ncells));
+	PROTECT(UNITSBlockX = allocVector(INTSXP,my_cdf.units[i].unit_block[j].ncells));
+	PROTECT(UNITSBlockY = allocVector(INTSXP,my_cdf.units[i].unit_block[j].ncells));
+	PROTECT(UNITSBlockIndexPos = allocVector(INTSXP,my_cdf.units[i].unit_block[j].ncells));
+	PROTECT(UNITSBlockPbase = allocVector(STRSXP,my_cdf.units[i].unit_block[j].ncells));
+	PROTECT(UNITSBlockTbase = allocVector(STRSXP,my_cdf.units[i].unit_block[j].ncells));
+	
+	for (k=0; k < my_cdf.units[i].unit_block[j].ncells; k++){
+	  //Rprintf("%d %d %d\n",i,j,k);
+	  // NUMERIC_POINTER(UNITSBlockAtom)[k] = (double)my_cdf.units[i].unit_block[j].unit_cells[k].atomnumber;
+	  // NUMERIC_POINTER(UNITSBlockX)[k] = (double)my_cdf.units[i].unit_block[j].unit_cells[k].x;
+	  //NUMERIC_POINTER(UNITSBlockY)[k] = (double)my_cdf.units[i].unit_block[j].unit_cells[k].y;
+	  //NUMERIC_POINTER(UNITSBlockIndexPos)[k] = (double)my_cdf.units[i].unit_block[j].unit_cells[k].indexpos;
+	  INTEGER_POINTER(UNITSBlockAtom)[k] = (int)my_cdf.units[i].unit_block[j].unit_cells[k].atomnumber;
+	  INTEGER_POINTER(UNITSBlockX)[k] = (int)my_cdf.units[i].unit_block[j].unit_cells[k].x;
+	  INTEGER_POINTER(UNITSBlockY)[k] = (int)my_cdf.units[i].unit_block[j].unit_cells[k].y;
+	  INTEGER_POINTER(UNITSBlockIndexPos)[k] = (int)my_cdf.units[i].unit_block[j].unit_cells[k].indexpos;
+	  sprintf(buf, "%c",my_cdf.units[i].unit_block[j].unit_cells[k].pbase);
+	  SET_VECTOR_ELT(UNITSBlockPbase,k,mkChar(buf)); 
+
+	  sprintf(buf, "%c",my_cdf.units[i].unit_block[j].unit_cells[k].tbase);
+	  SET_VECTOR_ELT(UNITSBlockTbase,k,mkChar(buf));
+	}
+
+	SET_VECTOR_ELT(UNITSBlockInfo,0,UNITSBlockAtom);
+	SET_VECTOR_ELT(UNITSBlockInfo,1,UNITSBlockX);
+	SET_VECTOR_ELT(UNITSBlockInfo,2,UNITSBlockY);
+	SET_VECTOR_ELT(UNITSBlockInfo,3,UNITSBlockIndexPos);
+	SET_VECTOR_ELT(UNITSBlockInfo,4,UNITSBlockPbase);
+	SET_VECTOR_ELT(UNITSBlockInfo,5,UNITSBlockTbase);
+	UNPROTECT(6);
+
+
+
+
+	setAttrib(UNITSBlockInfo, R_RowNamesSymbol, UNITSBlockInforow_names);
+	setAttrib(UNITSBlockInfo,R_ClassSymbol,mkString("data.frame"));
+
+	SET_VECTOR_ELT(UNITSBlock,2,UNITSBlockInfo);
+
+	SET_VECTOR_ELT(tmpUNITSBlock,j,UNITSBlock);
+	UNPROTECT(7);
+      }
+
+      SET_VECTOR_ELT(tmpUNIT,0,UNITSHeader);
+      SET_VECTOR_ELT(tmpUNIT,1,tmpUNITSBlock);
+
+      SET_VECTOR_ELT(UNITS,i,tmpUNIT);
+      UNPROTECT(5);
+    }
+    SET_VECTOR_ELT(CDFInfo,4,UNITS);
+    UNPROTECT(1);
+
+
+  } else {
+    /* return the abbreviated structure */
+    error("Abbreviated structure not yet implemented.\n");
+    
+
+  }
+
+
+
+
+
+  dealloc_cdf_xda(&my_cdf);
+  UNPROTECT(1);
+  return CDFInfo;
+
+
+}
