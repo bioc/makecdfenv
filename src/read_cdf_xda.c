@@ -303,7 +303,7 @@ static size_t fread_uchar(unsigned char *destination, int n, FILE *instream){
 
 #ifdef WORDS_BIGENDIAN
   /* Probably don't need to do anything for characters */
-  destination = ~destination;
+  // destination = ~destination;
 #endif
 
   return result;
