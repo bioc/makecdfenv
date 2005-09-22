@@ -19,8 +19,8 @@
  **
  ** Modification Dates
  ** Jul 24 - Initial version
- **
- **
+ ** Sep 20 - Continued Implementation
+ ** Sep 21 - Continued Implementation and debugging
  **
  **
  *******************************************************************/
@@ -83,7 +83,7 @@ typedef struct {
 
 
 typedef struct{
-  unsigned short type;
+  int type;
   unsigned int n_probes;
 
   cdf_text_qc_probe *qc_probes;
@@ -447,7 +447,7 @@ void read_cdf_header(FILE *infile,  cdf_text *mycdf, char* linebuffer){
   
   /* Read the Name */
   cur_tokenset = tokenize(linebuffer,"=\r\n");
-  mycdf->header.name = Calloc(sizeof(get_token(cur_tokenset,1))+1,char);
+  mycdf->header.name = Calloc(strlen(get_token(cur_tokenset,1))+1,char);
   strcpy(mycdf->header.name,get_token(cur_tokenset,1));
   delete_tokens(cur_tokenset);
 
@@ -481,7 +481,7 @@ void read_cdf_header(FILE *infile,  cdf_text *mycdf, char* linebuffer){
   findStartsWith(infile,"ChipReference",linebuffer);
   cur_tokenset = tokenize(linebuffer,"=\r\n");
   if (cur_tokenset->n > 1){
-    mycdf->header.chipreference = Calloc(sizeof(get_token(cur_tokenset,1))+1,char);
+    mycdf->header.chipreference = Calloc(strlen(get_token(cur_tokenset,1))+1,char);
     strcpy(mycdf->header.chipreference,get_token(cur_tokenset,1));
   } else {
     mycdf->header.chipreference = NULL;
@@ -508,7 +508,14 @@ void read_cdf_QCUnits(FILE *infile,  cdf_text *mycdf, char* linebuffer){
   for (i =0; i < mycdf->header.NumQCUnits; i++){
     /* move to the next QC section */
     AdvanceToSection(infile,"[QC",linebuffer);
-    
+    findStartsWith(infile,"Type",linebuffer);
+    cur_tokenset = tokenize(linebuffer,"=");
+    mycdf->qc_units[i].type = (unsigned short)atoi(get_token(cur_tokenset,1));
+    delete_tokens(cur_tokenset);
+    findStartsWith(infile,"NumberCells",linebuffer);
+    cur_tokenset = tokenize(linebuffer,"=");
+    mycdf->qc_units[i].n_probes = atoi(get_token(cur_tokenset,1));
+    delete_tokens(cur_tokenset);
 
   }
 
@@ -521,6 +528,135 @@ void read_cdf_QCUnits(FILE *infile,  cdf_text *mycdf, char* linebuffer){
 }
 
 
+
+void read_cdf_unit_block(FILE *infile,  cdf_text *mycdf, char* linebuffer, int unit){
+  tokenset *cur_tokenset;
+  int i;
+  
+
+  
+  for (i=0; i < mycdf->units[unit].numberblocks; i++){ 
+
+    mycdf->units[unit].blocks[i].blocknumber;
+    findStartsWith(infile,"Name",linebuffer);
+    cur_tokenset = tokenize(linebuffer,"=");
+    mycdf->units[unit].blocks[i].name = Calloc(strlen(get_token(cur_tokenset,1))+1,char);
+    strcpy(mycdf->units[unit].blocks[i].name,get_token(cur_tokenset,1));
+    delete_tokens(cur_tokenset);
+    // Rprintf("%s\n",mycdf->units[unit].blocks[i].name);
+    
+
+
+    findStartsWith(infile,"BlockNumber",linebuffer);
+    cur_tokenset = tokenize(linebuffer,"=");
+    mycdf->units[unit].blocks[i].blocknumber = atoi(get_token(cur_tokenset,1));
+    delete_tokens(cur_tokenset);
+    //  Rprintf("%d %d %d\n",unit,i,mycdf->header.numberofunits);
+
+    findStartsWith(infile,"NumAtoms",linebuffer);
+    cur_tokenset = tokenize(linebuffer,"=");
+    mycdf->units[unit].blocks[i].num_atoms = atoi(get_token(cur_tokenset,1));
+    delete_tokens(cur_tokenset);
+
+    findStartsWith(infile,"NumCells",linebuffer);
+    cur_tokenset = tokenize(linebuffer,"=");
+    mycdf->units[unit].blocks[i].num_cells = atoi(get_token(cur_tokenset,1));
+    delete_tokens(cur_tokenset);
+
+
+    findStartsWith(infile,"StartPosition",linebuffer);
+    cur_tokenset = tokenize(linebuffer,"=");
+    mycdf->units[unit].blocks[i].start_position = atoi(get_token(cur_tokenset,1));
+    delete_tokens(cur_tokenset);
+
+    findStartsWith(infile,"StopPosition",linebuffer);
+    cur_tokenset = tokenize(linebuffer,"=");
+    mycdf->units[unit].blocks[i].stop_position = atoi(get_token(cur_tokenset,1));
+    delete_tokens(cur_tokenset);
+
+    if (mycdf->units[unit].unit_type == 2){
+      findStartsWith(infile,"Direction",linebuffer);
+      cur_tokenset = tokenize(linebuffer,"=");
+      mycdf->units[unit].blocks[i].direction = atoi(get_token(cur_tokenset,1));
+      delete_tokens(cur_tokenset); 
+    } else {
+      mycdf->units[unit].blocks[i].direction = mycdf->units[unit].direction;
+    }
+  }
+  
+
+
+
+}
+
+
+
+
+
+
+
+
+void read_cdf_Units(FILE *infile,  cdf_text *mycdf, char* linebuffer){
+  tokenset *cur_tokenset;
+  int i;
+
+  mycdf->units = Calloc(mycdf->header.numberofunits,cdf_text_unit);
+
+  for (i =0; i < mycdf->header.numberofunits; i++){
+    /* move to the next Unit section */
+    AdvanceToSection(infile,"[Unit",linebuffer);
+    findStartsWith(infile,"Name",linebuffer); 
+    cur_tokenset = tokenize(linebuffer,"=\r\n");
+    mycdf->units[i].name = Calloc(strlen(get_token(cur_tokenset,1))+1,char);
+    strcpy(mycdf->units[i].name,get_token(cur_tokenset,1));
+ 
+    delete_tokens(cur_tokenset);
+  
+    
+    
+    findStartsWith(infile,"Direction",linebuffer);
+    cur_tokenset = tokenize(linebuffer,"=");
+    mycdf->units[i].direction = atoi(get_token(cur_tokenset,1));
+    delete_tokens(cur_tokenset);
+    
+    findStartsWith(infile,"NumAtoms",linebuffer);
+    cur_tokenset = tokenize(linebuffer,"=");
+    mycdf->units[i].num_atoms = atoi(get_token(cur_tokenset,1));
+    delete_tokens(cur_tokenset);
+    
+    findStartsWith(infile,"NumCells",linebuffer);
+    cur_tokenset = tokenize(linebuffer,"=");
+    mycdf->units[i].num_cells = atoi(get_token(cur_tokenset,1));
+    delete_tokens(cur_tokenset);
+
+    findStartsWith(infile,"UnitNumber",linebuffer);
+    cur_tokenset = tokenize(linebuffer,"=");
+    mycdf->units[i].unit_number = atoi(get_token(cur_tokenset,1));
+    delete_tokens(cur_tokenset);
+
+    findStartsWith(infile,"UnitType",linebuffer);
+    cur_tokenset = tokenize(linebuffer,"=");
+    mycdf->units[i].unit_type = atoi(get_token(cur_tokenset,1));
+    delete_tokens(cur_tokenset);
+
+    findStartsWith(infile,"NumberBlocks",linebuffer);
+    cur_tokenset = tokenize(linebuffer,"=");
+    mycdf->units[i].numberblocks = atoi(get_token(cur_tokenset,1));
+    delete_tokens(cur_tokenset); 
+
+    /*Skip MutationType since only appears on one type of array */
+    
+    mycdf->units[i].blocks = Calloc(mycdf->units[i].numberblocks,cdf_text_unit_block);
+
+  
+    read_cdf_unit_block(infile,mycdf,linebuffer,i); 
+    //    AdvanceToSection(infile,"[Unit",linebuffer);
+    Rprintf("%d\n",i);
+  }
+  
+
+
+}
 
 
 int read_cdf_text(char *filename, cdf_text *mycdf){
@@ -551,7 +687,7 @@ int read_cdf_text(char *filename, cdf_text *mycdf){
   if (strncmp("GC3.0", get_token(cur_tokenset,1), 5) != 0){
     error("The file %s does not look like a version GC3.0 CDF file",filename);
   } else {
-    mycdf->header.version = Calloc(sizeof(get_token(cur_tokenset,1))+1,char);
+    mycdf->header.version = Calloc(strlen(get_token(cur_tokenset,1))+1,char);
     strcpy(mycdf->header.version,get_token(cur_tokenset,1));
   }
   delete_tokens(cur_tokenset);
@@ -559,7 +695,7 @@ int read_cdf_text(char *filename, cdf_text *mycdf){
 
   read_cdf_header(infile,mycdf,linebuffer);
   read_cdf_QCUnits(infile,mycdf,linebuffer);
-
+  read_cdf_Units(infile,mycdf,linebuffer);
 
 
   return 1;
@@ -590,6 +726,12 @@ SEXP ReadtextCDFFileIntoRList(SEXP filename){
   SEXP HEADER;  /* The file header */
   SEXP HEADERNames;
   SEXP TEMPSXP;
+  SEXP TEMPSXP2;
+
+  SEXP QCUNITS;
+  SEXP UNITS;
+
+  int i;
 						
 
   cdf_text my_cdf;
@@ -606,9 +748,11 @@ SEXP ReadtextCDFFileIntoRList(SEXP filename){
 
 
    /* return the full structure */
-  PROTECT(CDFInfo = allocVector(VECSXP,1));
-  PROTECT(CDFInfoNames = allocVector(STRSXP,1));
-  SET_VECTOR_ELT(HEADERNames,0,mkChar("Chip"));
+  PROTECT(CDFInfo = allocVector(VECSXP,3));
+  PROTECT(CDFInfoNames = allocVector(STRSXP,3));
+  SET_VECTOR_ELT(CDFInfoNames,0,mkChar("Chip"));
+  SET_VECTOR_ELT(CDFInfoNames,1,mkChar("QC"));
+  SET_VECTOR_ELT(CDFInfoNames,2,mkChar("Unit"));
 
   setAttrib(CDFInfo,R_NamesSymbol,CDFInfoNames);
   UNPROTECT(1);
@@ -670,6 +814,99 @@ SEXP ReadtextCDFFileIntoRList(SEXP filename){
   UNPROTECT(1);
   
   SET_VECTOR_ELT(CDFInfo,0,HEADER);
+
+  PROTECT(QCUNITS = allocVector(VECSXP,my_cdf.header.NumQCUnits));
+  for (i=0; i <my_cdf.header.NumQCUnits; i++){
+    PROTECT(TEMPSXP=allocVector(VECSXP,3));
+    PROTECT(TEMPSXP2 = allocVector(REALSXP,1));
+    NUMERIC_POINTER(TEMPSXP2)[0] = (double)my_cdf.qc_units[i].type;
+    SET_VECTOR_ELT(TEMPSXP,0,TEMPSXP2);
+    UNPROTECT(1);
+    PROTECT(TEMPSXP2 = allocVector(REALSXP,1));
+    NUMERIC_POINTER(TEMPSXP2)[0] = (double)my_cdf.qc_units[i].n_probes;
+    SET_VECTOR_ELT(TEMPSXP,1,TEMPSXP2);
+    UNPROTECT(1);
+    PROTECT(TEMPSXP2=allocVector(STRSXP,3));
+    SET_VECTOR_ELT(TEMPSXP2,0,mkChar("Type"));
+    SET_VECTOR_ELT(TEMPSXP2,1,mkChar("NumberCells"));
+    SET_VECTOR_ELT(TEMPSXP2,2,mkChar("QCCells"));
+    setAttrib(TEMPSXP,R_NamesSymbol,TEMPSXP2);
+    UNPROTECT(1);
+    SET_VECTOR_ELT(QCUNITS,i,TEMPSXP);
+   
+    UNPROTECT(1);
+  }
+  SET_VECTOR_ELT(CDFInfo,1,QCUNITS);
+  UNPROTECT(1);
+
+
+  PROTECT(UNITS = allocVector(VECSXP,my_cdf.header.numberofunits));
+  for (i=0; i < my_cdf.header.numberofunits; i++){
+    PROTECT(TEMPSXP=allocVector(VECSXP,8));
+    PROTECT(TEMPSXP2=allocVector(STRSXP,1));
+      
+    SET_VECTOR_ELT(TEMPSXP2,0,mkChar(my_cdf.units[i].name));
+    SET_VECTOR_ELT(TEMPSXP,0,TEMPSXP2);
+    UNPROTECT(1);
+    
+    
+    PROTECT(TEMPSXP2 = allocVector(REALSXP,1));
+    NUMERIC_POINTER(TEMPSXP2)[0] = (double)my_cdf.units[i].direction;
+    SET_VECTOR_ELT(TEMPSXP,1,TEMPSXP2);
+    UNPROTECT(1);
+
+    PROTECT(TEMPSXP2 = allocVector(REALSXP,1));
+    NUMERIC_POINTER(TEMPSXP2)[0] = (double)my_cdf.units[i].num_atoms;
+    SET_VECTOR_ELT(TEMPSXP,2,TEMPSXP2);
+    UNPROTECT(1);
+
+    PROTECT(TEMPSXP2 = allocVector(REALSXP,1));
+    NUMERIC_POINTER(TEMPSXP2)[0] = (double)my_cdf.units[i].num_cells;
+    SET_VECTOR_ELT(TEMPSXP,3,TEMPSXP2);
+    UNPROTECT(1);
+
+   
+    PROTECT(TEMPSXP2 = allocVector(REALSXP,1));
+    NUMERIC_POINTER(TEMPSXP2)[0] = (double)my_cdf.units[i].unit_number;
+    SET_VECTOR_ELT(TEMPSXP,4,TEMPSXP2);
+    UNPROTECT(1); 
+
+    PROTECT(TEMPSXP2 = allocVector(REALSXP,1));
+    NUMERIC_POINTER(TEMPSXP2)[0] = (double)my_cdf.units[i].unit_type;
+    SET_VECTOR_ELT(TEMPSXP,5,TEMPSXP2);
+    UNPROTECT(1); 
+
+    PROTECT(TEMPSXP2 = allocVector(REALSXP,1));
+    NUMERIC_POINTER(TEMPSXP2)[0] = (double)my_cdf.units[i].numberblocks;
+    SET_VECTOR_ELT(TEMPSXP,6,TEMPSXP2);
+    UNPROTECT(1); 
+
+
+    
+
+
+    PROTECT(TEMPSXP2 = allocVector(STRSXP,8));
+    SET_VECTOR_ELT(TEMPSXP2,0,mkChar("Name"));
+    SET_VECTOR_ELT(TEMPSXP2,1,mkChar("Direction"));
+    SET_VECTOR_ELT(TEMPSXP2,2,mkChar("NumAtoms"));
+    SET_VECTOR_ELT(TEMPSXP2,3,mkChar("NumCells"));
+    SET_VECTOR_ELT(TEMPSXP2,4,mkChar("UnitNumber"));
+    SET_VECTOR_ELT(TEMPSXP2,5,mkChar("UnitType"));
+    SET_VECTOR_ELT(TEMPSXP2,6,mkChar("NumberBlocks"));
+    SET_VECTOR_ELT(TEMPSXP2,7,mkChar("Unit_Block"));
+    setAttrib(TEMPSXP,R_NamesSymbol,TEMPSXP2);
+    UNPROTECT(1);
+
+
+    SET_VECTOR_ELT(UNITS,i,TEMPSXP);
+    UNPROTECT(1);
+    
+
+
+  }
+  SET_VECTOR_ELT(CDFInfo,2,UNITS);
+  UNPROTECT(1);
+
 
   
 
