@@ -21,7 +21,7 @@
  ** Jul 24 - Initial version
  ** Sep 20 - Continued Implementation
  ** Sep 21 - Continued Implementation and debugging
- **
+ ** Sep 22 - Continued Implementation and testing
  **
  *******************************************************************/
 
@@ -539,7 +539,7 @@ void read_cdf_unit_block(FILE *infile,  cdf_text *mycdf, char* linebuffer, int u
 
     mycdf->units[unit].blocks[i].blocknumber;
     findStartsWith(infile,"Name",linebuffer);
-    cur_tokenset = tokenize(linebuffer,"=");
+    cur_tokenset = tokenize(linebuffer,"=\r\n");
     mycdf->units[unit].blocks[i].name = Calloc(strlen(get_token(cur_tokenset,1))+1,char);
     strcpy(mycdf->units[unit].blocks[i].name,get_token(cur_tokenset,1));
     delete_tokens(cur_tokenset);
@@ -727,11 +727,13 @@ SEXP ReadtextCDFFileIntoRList(SEXP filename){
   SEXP HEADERNames;
   SEXP TEMPSXP;
   SEXP TEMPSXP2;
+  SEXP TEMPSXP3;
+  SEXP TEMPSXP4;
 
   SEXP QCUNITS;
   SEXP UNITS;
 
-  int i;
+  int i,j;
 						
 
   cdf_text my_cdf;
@@ -881,6 +883,76 @@ SEXP ReadtextCDFFileIntoRList(SEXP filename){
     SET_VECTOR_ELT(TEMPSXP,6,TEMPSXP2);
     UNPROTECT(1); 
 
+    PROTECT(TEMPSXP2 = allocVector(VECSXP,my_cdf.units[i].numberblocks));
+
+    for (j=0; j <my_cdf.units[i].numberblocks; j++){
+      PROTECT(TEMPSXP3 = allocVector(VECSXP,8));
+
+      
+      PROTECT(TEMPSXP4=allocVector(STRSXP,1));
+      
+      SET_VECTOR_ELT(TEMPSXP4,0,mkChar(my_cdf.units[i].blocks[j].name));
+      SET_VECTOR_ELT(TEMPSXP3,0,TEMPSXP4);
+      UNPROTECT(1);
+
+      
+      PROTECT(TEMPSXP4=allocVector(REALSXP,1));
+      NUMERIC_POINTER(TEMPSXP4)[0] = (double)my_cdf.units[i].blocks[j].blocknumber;
+      SET_VECTOR_ELT(TEMPSXP3,1,TEMPSXP4);
+      UNPROTECT(1);
+
+      PROTECT(TEMPSXP4=allocVector(REALSXP,1));
+      NUMERIC_POINTER(TEMPSXP4)[0] = (double)my_cdf.units[i].blocks[j].num_atoms;
+      SET_VECTOR_ELT(TEMPSXP3,2,TEMPSXP4);
+      UNPROTECT(1);
+      
+      PROTECT(TEMPSXP4=allocVector(REALSXP,1));
+      NUMERIC_POINTER(TEMPSXP4)[0] = (double)my_cdf.units[i].blocks[j].num_cells;
+      SET_VECTOR_ELT(TEMPSXP3,3,TEMPSXP4);
+      UNPROTECT(1);
+      
+
+      PROTECT(TEMPSXP4=allocVector(REALSXP,1));
+      NUMERIC_POINTER(TEMPSXP4)[0] = (double)my_cdf.units[i].blocks[j].start_position;
+      SET_VECTOR_ELT(TEMPSXP3,4,TEMPSXP4);
+      UNPROTECT(1);
+      
+      PROTECT(TEMPSXP4=allocVector(REALSXP,1));
+      NUMERIC_POINTER(TEMPSXP4)[0] = (double)my_cdf.units[i].blocks[j].stop_position;
+      SET_VECTOR_ELT(TEMPSXP3,5,TEMPSXP4);
+      UNPROTECT(1);
+
+
+      PROTECT(TEMPSXP4=allocVector(REALSXP,1));
+      NUMERIC_POINTER(TEMPSXP4)[0] = (double)my_cdf.units[i].blocks[j].direction;
+      SET_VECTOR_ELT(TEMPSXP3,6,TEMPSXP4);
+      UNPROTECT(1);
+
+
+
+      PROTECT(TEMPSXP4=allocVector(STRSXP,8));
+      SET_VECTOR_ELT(TEMPSXP4,0,mkChar("Name"));
+      SET_VECTOR_ELT(TEMPSXP4,1,mkChar("BlockNumber"));
+      SET_VECTOR_ELT(TEMPSXP4,2,mkChar("NumAtoms"));
+      SET_VECTOR_ELT(TEMPSXP4,3,mkChar("NumCells"));
+      SET_VECTOR_ELT(TEMPSXP4,4,mkChar("StartPosition"));
+      SET_VECTOR_ELT(TEMPSXP4,5,mkChar("StopPosition"));
+      SET_VECTOR_ELT(TEMPSXP4,6,mkChar("Direction"));
+      SET_VECTOR_ELT(TEMPSXP4,7,mkChar("Unit_Block_Cells"));
+      setAttrib(TEMPSXP3,R_NamesSymbol,TEMPSXP4);
+      UNPROTECT(1);
+
+      SET_VECTOR_ELT(TEMPSXP2,j,TEMPSXP3);
+      UNPROTECT(1);
+    }
+
+
+
+
+
+
+    SET_VECTOR_ELT(TEMPSXP,7,TEMPSXP2);
+    UNPROTECT(1); 
 
     
 
@@ -896,6 +968,9 @@ SEXP ReadtextCDFFileIntoRList(SEXP filename){
     SET_VECTOR_ELT(TEMPSXP2,7,mkChar("Unit_Block"));
     setAttrib(TEMPSXP,R_NamesSymbol,TEMPSXP2);
     UNPROTECT(1);
+
+
+
 
 
     SET_VECTOR_ELT(UNITS,i,TEMPSXP);
