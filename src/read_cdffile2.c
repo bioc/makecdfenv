@@ -516,7 +516,7 @@ void read_cdf_QCUnits(FILE *infile,  cdf_text *mycdf, char* linebuffer){
     cur_tokenset = tokenize(linebuffer,"=");
     mycdf->qc_units[i].n_probes = atoi(get_token(cur_tokenset,1));
     delete_tokens(cur_tokenset);
-
+    mycdf->qc_units[i].qc_probes = Calloc(mycdf->qc_units[i].n_probes,cdf_text_qc_probe);
   }
 
 
@@ -582,6 +582,9 @@ void read_cdf_unit_block(FILE *infile,  cdf_text *mycdf, char* linebuffer, int u
     } else {
       mycdf->units[unit].blocks[i].direction = mycdf->units[unit].direction;
     }
+    
+    mycdf->units[unit].blocks[i].probes = Calloc(mycdf->units[unit].blocks[i].num_cells,cdf_text_unit_block_probe);
+
   }
   
 

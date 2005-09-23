@@ -15,6 +15,7 @@
  ** Feb 5 - A bunch of hacks for SNP chips.
  ** Apr 20
  ** Aug 16, 2005 - Fix potential big endian bug
+ ** Sep 22, 2005 - Fix some signed/unsigned bugs
  **
  ****************************************************************/
 
@@ -41,7 +42,7 @@
 typedef struct {
   int magicnumber;
   int version_number;
-  short rows,cols;
+  unsigned short rows,cols;
   int n_units,n_qc_units;
   int len_ref_seq;
   int i;
@@ -334,7 +335,7 @@ int read_cdf_qcunit(cdf_qc_unit *my_unit,int filelocation,FILE *instream){
   fseek(instream,filelocation,SEEK_SET);
 
   fread_uint16(&(my_unit->type),1,instream);
-  fread_int32(&(my_unit->n_probes),1,instream);
+  fread_uint32(&(my_unit->n_probes),1,instream);
 
 
   my_unit->qc_probes = Calloc(my_unit->n_probes,cdf_qc_probe);
