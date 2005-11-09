@@ -17,8 +17,7 @@ setClass("Cdf", representation(cdfName="character",
 
    setMethod("name.levels","Cdf",function(object) object@name.levels)
 
-  if( !isGeneric("name.levels<-") )
-      setGeneric("name.levels<-", function(object, value)
+  setGeneric("name.levels<-", function(object, value)
                  standardGeneric("name.levels<-"))
   setReplaceMethod("name.levels", "Cdf", function(object, value){
     object@name.levels <- value
@@ -34,8 +33,7 @@ setClass("Cdf", representation(cdfName="character",
 
    setMethod("pbase","Cdf",function(object) object@pbase)
 
-  if( !isGeneric("pbase<-") )
-      setGeneric("pbase<-", function(object, value)
+  setGeneric("pbase<-", function(object, value)
                  standardGeneric("pbase<-"))
   setReplaceMethod("pbase", "Cdf", function(object, value){
     object@pbase <- value
@@ -51,8 +49,7 @@ setClass("Cdf", representation(cdfName="character",
 
    setMethod("pbase.levels","Cdf",function(object) object@pbase.levels)
 
-  if( !isGeneric("pbase.levels<-") )
-      setGeneric("pbase.levels<-", function(object, value)
+  setGeneric("pbase.levels<-", function(object, value)
                  standardGeneric("pbase.levels<-"))
   setReplaceMethod("pbase.levels", "Cdf", function(object, value){
     object@pbase.levels <- value
@@ -68,8 +65,7 @@ setClass("Cdf", representation(cdfName="character",
 
    setMethod("tbase","Cdf",function(object) object@tbase)
 
-  if( !isGeneric("tbase<-") )
-      setGeneric("tbase<-", function(object, value)
+  setGeneric("tbase<-", function(object, value)
                  standardGeneric("tbase<-"))
   setReplaceMethod("tbase", "Cdf", function(object, value){
     object@tbase <- value
@@ -85,8 +81,7 @@ setClass("Cdf", representation(cdfName="character",
 
    setMethod("tbase.levels","Cdf",function(object) object@tbase.levels)
 
-  if( !isGeneric("tbase.levels<-") )
-      setGeneric("tbase.levels<-", function(object, value)
+  setGeneric("tbase.levels<-", function(object, value)
                  standardGeneric("tbase.levels<-"))
   setReplaceMethod("tbase.levels", "Cdf", function(object, value){
     object@tbase.levels <- value
