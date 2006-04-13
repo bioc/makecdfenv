@@ -3,6 +3,7 @@ Title: @PKGNAME@
 Version: @VERSION@
 Created: @TODAY@
 Author: @AUTHOR@
-Description: A package containing an environment represeting the @CDFFILENAME@ file.
+Description: A package containing an environment representing the @CDFFILENAME@ file.
 Maintainer: @MAINTAINER@
 License: LGPL
+biocViews: AnnotationData, AffymetrixChip, @PKGROOT@, @SPECIES@

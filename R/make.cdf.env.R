@@ -141,8 +141,9 @@ make.cdf.package<- function(filename,
                             package.path = getwd(),
                             compress = FALSE,
                             author = "The Bioconductor Project",
-                            maintainer = "The Bioconductor Project <bioconductor@stat.math.ethz.ch>",
+                            maintainer = "Biocore Data Team <biocannotation@lists.fhcrc.org>",
                             version = packageDescription("makecdfenv", field="Version"),
+                            species = NULL,
                             unlink  = FALSE,
                             verbose = TRUE) {
   
@@ -150,6 +151,10 @@ make.cdf.package<- function(filename,
   ## cleancdfname() is defined in package 'affy'.
   if(is.null(packagename))
     packagename <- cleancdfname(sub("\.cdf$", "", filename, ignore.case=TRUE))
+
+  if(is.null(species))
+    stop("A species name must be specified, using the correct format:\n Example - Homo_sapiens\n")
+  pkgroot <- sub("cdf$","", packagename)
 
   cdf <- make.cdf.env(filename, cdf.path=cdf.path, compress=compress, return.env.only=FALSE)
   assign(packagename, cdf$env)
@@ -161,7 +166,9 @@ make.cdf.package<- function(filename,
          AUTHOR      = author,
          TODAY       = date(),
          CDFFILENAME = filename,
-         MAINTAINER  = maintainer))
+         MAINTAINER  = maintainer,
+         SPECIES     = species,
+         PKGROOT     = pkgroot))
 
   ## see in the subdirectory 'Code' of this package for all the
   ## files that go into the package!
@@ -176,11 +183,3 @@ make.cdf.package<- function(filename,
   
   return(packagename)
 }
-
-
-
-
-
-
-
-

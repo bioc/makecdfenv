@@ -14,6 +14,7 @@ make.cdf.package(filename,
   author       = "The Bioconductor Project",
   maintainer   = "The Bioconductor Project <bioconductor@stat.math.ethz.ch>",
   version      = packageDescription("makecdfenv", field="Version"),
+  species      = NULL
   unlink       = FALSE,
   verbose      = TRUE)
 }
@@ -27,7 +28,8 @@ make.cdf.package(filename,
   \item{author}{Character. What to put in the \code{author} field of the package.}
   \item{maintainer}{Character. What to put in the \code{maintainer} field of the package.}
   \item{version}{Character. What to put in the version
-   field. Should be a of the form \code{x.x.x}.}
+    field. Should be a of the form \code{x.x.x}.}
+  \item{species}{Character. Must be specified using the format e.g., Homo_sapiens}
   \item{unlink}{Logical. If \code{TRUE}, and a package directory exists
    already in \code{package.path}, that is overwritten.}
   \item{verbose}{Logical. If \code{TRUE} messages are shown.}
@@ -59,7 +61,7 @@ If success, the function returns the name of the created package.
   pkgpath <- tempdir()
   make.cdf.package("Hu6800.CDF.gz",
            cdf.path=system.file("extdata", package="makecdfenv"),
-           compress=TRUE,
+           compress=TRUE, species = "Homo_sapiens",
 	   package.path = pkgpath)
   dir(pkgpath)	   
 }
