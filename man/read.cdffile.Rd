@@ -10,7 +10,7 @@
 \value{
   Returns a \code{\link{Cdf-class}} object.
 }
-\warnings{
+\note{
   A \code{Cdf} object is not a cdf environment, which will be needed for
   the computation of expression values from the probe intensities in a
   \code{AffyBatch}. 
