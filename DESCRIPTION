@@ -1,12 +1,12 @@
 Package: makecdfenv
-Version: 1.9.2
+Version: 1.9.3
 Date: 2006-03-06
 Title: CDF Environment Maker
 Author: Rafael A. Irizarry <rafa@jhu.edu>, Laurent Gautier
         <laurent@cbs.dtu.dk>, Wolfgang Huber
         <w.huber@dkfz-heidelberg.de>, Ben Bolstad
         <bmb@bmbolstad.com>
-Maintainer: Rafael A. Irizarry <rafa@jhu.edu>
+Maintainer: James W. MacDonald <jmacdon@med.umich.edu>
 Depends: R (>= 2.1.0), methods, Biobase (>= 1.4.1), affy (>= 1.4.0), utils, affyio
 Description: This package has two functions. One reads a Affymetrix
         chip description file (CDF) and creates a hash table

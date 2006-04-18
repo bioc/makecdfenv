@@ -29,7 +29,7 @@ make.cdf.package(filename,
   \item{maintainer}{Character. What to put in the \code{maintainer} field of the package.}
   \item{version}{Character. What to put in the version
     field. Should be a of the form \code{x.x.x}.}
-  \item{species}{Character. Must be specified using the format e.g., 'Homo\_sapiens'}
+  \item{species}{Character. Must be specified using the format e.g., Homo\_sapiens}
   \item{unlink}{Logical. If \code{TRUE}, and a package directory exists
    already in \code{package.path}, that is overwritten.}
   \item{verbose}{Logical. If \code{TRUE} messages are shown.}
