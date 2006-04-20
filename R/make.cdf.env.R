@@ -50,7 +50,7 @@ make.cdf.env <- function(filename,
     ## given ncol and nrow we can figure out the 2D (x,y) position
     ## now we assign 
     
-    env = new.env(hash=TRUE, parent=NULL)
+    env = new.env(hash=TRUE, parent=emptyenv())
     
     genenames <- name.levels(cdf) ##so that we only use name.level method once
     n <- length(genenames) ##number of genes
@@ -108,7 +108,7 @@ make.cdf.env <- function(filename,
     sizey <- tmp[[1]][2]
     tmp <- tmp[[2]][order(names(tmp[[2]]))]
 
-    env = new.env(hash=TRUE, parent=NULL)
+    env = new.env(hash=TRUE, parent=emptyenv())
     multiassign(names(tmp),tmp, env)
     syms = list(
       I2XY  = paste("y*", sizex, "+x+1", sep=""),
