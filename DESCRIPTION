@@ -15,4 +15,5 @@ Description: This package has two functions. One reads a Affymetrix
         that environment.
 License: GPL version 2 or newer
 SaveImage: yes
+biocViews: OneChannel, DataImport, Preprocessing
 
