@@ -7,3 +7,4 @@ Description: A package containing an environment representing the @CDFFILENAME@ 
 Maintainer: @MAINTAINER@
 License: LGPL
 biocViews: AnnotationData, AffymetrixChip, @PKGROOT@, @SPECIES@
+Depends: utils
