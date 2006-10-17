@@ -150,7 +150,7 @@ make.cdf.package<- function(filename,
   ## If no packagename given change CDF filename to packagename.
   ## cleancdfname() is defined in package 'affy'.
   if(is.null(packagename))
-    packagename <- cleancdfname(sub("\.cdf$", "", filename, ignore.case=TRUE))
+    packagename <- cleancdfname(sub("\\.cdf$", "", filename, ignore.case=TRUE))
 
   if(is.null(species))
     stop("A species name must be specified, using the correct format:\n Example - Homo_sapiens\n")
