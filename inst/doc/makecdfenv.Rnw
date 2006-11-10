@@ -37,7 +37,7 @@ can be used to create cdf environments from Affymetrix chip
 description files to be used with the package \Rpackage{affy}.
 
 For many {\it CDF} files a pre-assembled package is available from
-\url{http://www.bioconductor.org/data/cdfenvs/cdfenvs.html}. The
+\url{http://www.bioconductor.org/}. The
 following notes explain what to do if you want to create your own.
 
 \section{Creating a CDF package}
@@ -54,7 +54,7 @@ section~\ref{sec:make.cdf.env}
 Let's say your CDF file is called \Robject{eggplantgenome.cdf} and
 is in your working directory. To make a package, simply write
 \begin{Sinput}
-R> make.cdf.package("eggplantgenome.cdf")
+R> make.cdf.package("eggplantgenome.cdf", species = "Solanum_sp")
 \end{Sinput}
 This will create a subdirectory \Robject{eggplantgenomecdf} in your
 working directory, which contains the package.  Please consult the
@@ -71,12 +71,12 @@ affy package to process eggplant genechips.
 \section{Creating CDF environments}
 \label{sec:make.cdf.env}
 If you do not choose to use the package creation mechanism, you can
-still produce a data structure (in R lingo, it is called
+still produce a data structure (in R lingo, it is called an
 {\it environment}) that can be used by the affy package.
-Let's say your CDF file is called \Robject{eggplantgenome.cdf} and
+Let's say your CDF file is called \Robject{EggPlantGenome.cdf} and
 is in your working directory. Simply write
 \begin{Sinput}
-R> eggplantcdf = make.cdf.env("eggplantgenome.cdf")
+R> EggPlantGenome = make.cdf.env("EggPlantGenome.cdf")
 \end{Sinput}
 Please consult the help page for \Rfunction{make.cdf.env} to find out
 about further options.
@@ -86,7 +86,15 @@ What should you call your package or environment?
 
 \Rfunction{make.cdf.package} chooses a default name by stripping all
 non-letters and non-numbers from the CDF file name, and converting
-everything to lower case. In many cases, this will work.
+everything to lower case. In almost all cases you should use this default
+name for a package. 
+
+This is important because the \Rpackage{affy} package contains
+functionality to automatically detect the correct CDF package for a given
+chip. If the package is not found, it will try to download from the 
+Bioconductor servers. If the package is not found there, it will error out. 
+At that point the only recourse is to manually change the cdfName slot of 
+the \Robject{AffyBatch}, or re-create the CDF package with the correct name.
 
 You can obtain the CDF name that is associated with a CEL file through
 \begin{Sinput}
@@ -96,9 +104,27 @@ Then call the package making function this way:
 \begin{Sinput}
 R> make.cdf.package("eggplantgenome.cdf", packagename=pname)
 \end{Sinput}
-Similarly, if you work with the environments directly (as
-described in section~\ref{sec:make.cdf.env}) simply replace the word
-\Robject{eggplantcdf} with what ever the value of \Robject{pname} is.
+
+Unfortunately, the naming convention for environments is slightly different.
+Instead of using the \Rfunction{cleancdfname}, the \Rpackage{affy} package
+will look for an environment with the same \it{exact} name as the original
+CDF file, minus the suffix (the '.CDF' part). So for instance, if the CDF 
+name was EggPlantGenome.CDF, you would want to create an environment this way:
+\begin{Sinput}
+R> EggPlantGenome <- make.cdf.env("EggPlantGenome.CDF")
+\end{Sinput}
+
+There are certain characters that will not work in a variable name
+(such as +, -, /, *). If your CDF name contains one of these characters, the 
+only recourse is to either create a package (which by default will not contain
+these characters), or to manually change the cdfName of your \Robject{AffyBatch}
+so the \Rpackage{affy} package will find your environment. Say your CDF name
+is an-unacceptable-name.CDF.
+\begin{Sinput}
+R> mycdfenv <- make.cdf.env("an-unacceptable-name.CDF")
+R> dat <- ReadAffy()
+R> dat@cdfName <- "mycdfenv"
+\end{Sinput}
 
 In instances of \Robject{AffyBatch}, the \Robject{cdfName} slot gives the name
 of the appropriate CDF file for the arrays that are represented in the
@@ -118,7 +144,7 @@ cat("HG-133A is",cleancdfname("HG-133A"),"\n")
 The method \Rfunction{getCdfInfo} takes as an argument \Robject{AffyBatch}
 and returns the appropriate environment.  If \Robject{x} is an
 \Robject{AffyBatch}, this function will look for an environment with name
-\Robject{cleancdfname(x@cdfName)}.
+\Robject{x@cdfName}.
 
 \section{Location-ProbeSet Mapping}
 \label{sec:probesloc}
