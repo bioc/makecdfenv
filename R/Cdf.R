@@ -9,11 +9,8 @@ setClass("Cdf", representation(cdfName="character",
                                  tbase.levels="character",
                                  atom="matrix"))
   ## name.levels method
-  if( !isGeneric("name.levels") ) {
     setGeneric("name.levels", function(object)
                standardGeneric("name.levels"))
-  } else
-    cat("name.levels is already generic, could be a problem.\n")
 
    setMethod("name.levels","Cdf",function(object) object@name.levels)
 
@@ -25,11 +22,8 @@ setClass("Cdf", representation(cdfName="character",
     })
 
   ## pbase method
-  if( !isGeneric("pbase") ) {
     setGeneric("pbase", function(object)
                standardGeneric("pbase"))
-  } else
-    cat("pbase is already generic, could be a problem.\n")
 
    setMethod("pbase","Cdf",function(object) object@pbase)
 
@@ -41,11 +35,8 @@ setClass("Cdf", representation(cdfName="character",
     })
 
  ##pbase.levels method
-  if( !isGeneric("pbase.levels") ) {
     setGeneric("pbase.levels", function(object)
                standardGeneric("pbase.levels"))
-  } else
-    cat("pbase.levels is already generic, could be a problem.\n")
 
    setMethod("pbase.levels","Cdf",function(object) object@pbase.levels)
 
@@ -57,13 +48,10 @@ setClass("Cdf", representation(cdfName="character",
     })
 
   ## tbase method
-  if( !isGeneric("tbase") ) {
     setGeneric("tbase", function(object)
                standardGeneric("tbase"))
-  } else
-    cat("tbase is already generic, could be a problem.\n")
 
-   setMethod("tbase","Cdf",function(object) object@tbase)
+    setMethod("tbase","Cdf",function(object) object@tbase)
 
   setGeneric("tbase<-", function(object, value)
                  standardGeneric("tbase<-"))
@@ -73,11 +61,8 @@ setClass("Cdf", representation(cdfName="character",
     })
 
   ## tbase.levels method
-  if( !isGeneric("tbase.levels") ) {
     setGeneric("tbase.levels", function(object)
                standardGeneric("tbase.levels"))
-  } else
-    cat("tbase.levels is already generic, could be a problem.\n")
 
    setMethod("tbase.levels","Cdf",function(object) object@tbase.levels)
 
