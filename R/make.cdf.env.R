@@ -159,6 +159,12 @@ make.cdf.package<- function(filename,
   cdf <- make.cdf.env(filename, cdf.path=cdf.path, compress=compress, return.env.only=FALSE)
   assign(packagename, cdf$env)
 
+  ## Add small env containing nrow and ncol
+  dimenv <- new.env(hash = TRUE, parent = emptyenv())
+  multiassign(c("NROW", "NCOL"), as.numeric(c(cdf$syms$SIZEX, cdf$syms$SIZEY)), dimenv)
+  dimenvname <- paste(sub("cdf$", "", packagename), "dim", sep = "")
+  assign(dimenvname, dimenv)
+
   home  <- .path.package("makecdfenv")
   symbols = append(cdf$syms,
     list(PKGNAME     = packagename,
@@ -168,7 +174,8 @@ make.cdf.package<- function(filename,
          CDFFILENAME = filename,
          MAINTAINER  = maintainer,
          SPECIES     = species,
-         PKGROOT     = pkgroot))
+         PKGROOT     = pkgroot,
+         DIMENVNAME  = dimenvname))
 
   ## see in the subdirectory 'Code' of this package for all the
   ## files that go into the package!
@@ -179,7 +186,8 @@ make.cdf.package<- function(filename,
                 unlink = unlink, quiet = !verbose)
 
   ## save an XDR file with the environment
-  save(list = packagename, file = file.path(res$pkgdir, "data", paste(packagename,".rda",sep="")))
+  save(list = c(packagename, dimenvname),
+       file = file.path(res$pkgdir, "data", paste(packagename,".rda",sep="")))
   
   return(packagename)
 }
