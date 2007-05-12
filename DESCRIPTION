@@ -14,6 +14,6 @@ Description: This package has two functions. One reads a Affymetrix
         mapping. The other creates a package that automatically loads
         that environment.
 License: GPL version 2 or newer
-SaveImage: yes
+LazyLoad: yes
 biocViews: OneChannel, DataImport, Preprocessing
 
