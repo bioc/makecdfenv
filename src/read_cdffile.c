@@ -54,7 +54,7 @@
 
 
 typedef struct {
-  char *filepath;
+  const char *filepath;
   int lineno;     /* current position in the file */
   int compress;   /* compressed file (or not ?) */
   void *stream;   /* can be a FILE or a gzFile*/
@@ -260,8 +260,8 @@ SEXP getInfo(SEXP filename, SEXP filetype, SEXP unitR, SEXP propertyR, SEXP comp
   affy_file affyFile;
   int tmp;
   char *retour;
-  char *unit;
-  char *property;
+  const char *unit;
+  const char *property;
 
   unit = CHAR(STRING_ELT(unitR,0));
   property = CHAR(STRING_ELT(propertyR,0));
@@ -562,12 +562,10 @@ char static *getProperty(const char *unit, affy_file *affyFile, char *buffy)
  * buffer2=buffer
  */ 
 SEXP readQC(SEXP filename, SEXP startunitR, SEXP indexvalR, SEXP compressR) {
-  const char *param_unit = "Chip";
-   
   SEXP qcindex,dim;
   affy_file affyFile;
   
-  char *start_unit; /* a unit to find in the CDF */
+  const char *start_unit; /* a unit to find in the CDF */
   char *retour;     /* */
   char *buffer;
   char *buffer2;
