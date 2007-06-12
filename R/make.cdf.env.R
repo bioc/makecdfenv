@@ -188,6 +188,17 @@ make.cdf.package<- function(filename,
   ## save an XDR file with the environment
   save(list = c(packagename, dimenvname),
        file = file.path(res$pkgdir, "data", paste(packagename,".rda",sep="")))
-  
-  return(packagename)
+
+  pkgdir <- file.path(package.path, packagename)
+
+  if(verbose)
+      cat("\n\n\nREADME PLEASE:\n",
+          "A source package has now been produced in\n", pkgdir, ".\n",
+          "Before using this package it must be installed via 'R CMD INSTALL'\n",
+          "at a terminal prompt (or DOS command shell).\nIf you are using ",
+          "Windows, you will need to get set up to install packages.\n",
+          "See the 'R Installation and Administration' manual, specifically\n",
+          "Section 6 'Add-on Packages' as well as 'Appendix E: The Windows Toolset'\n",
+          "for more information.\n\n\n", sep="")
+
 }
