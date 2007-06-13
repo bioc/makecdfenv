@@ -199,6 +199,9 @@ make.cdf.package<- function(filename,
           "Windows, you will need to get set up to install packages.\n",
           "See the 'R Installation and Administration' manual, specifically\n",
           "Section 6 'Add-on Packages' as well as 'Appendix E: The Windows Toolset'\n",
-          "for more information.\n\n\n", sep="")
+          "for more information.\n\nAlternatively, you could use make.cdf.env(), ",
+          "which will not require you to install a package.\n",
+          "However, this environment will only persist for the current R session\n",
+          "unless you save() it.\n\n\n",sep="")
 
 }
