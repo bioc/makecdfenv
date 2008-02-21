@@ -113,8 +113,8 @@
       \code{pbase.levels} slot. }
     \item{pbase.levels<-}{(Cdf): A replacement function for
       \code{pbase.levels} slot. }
-    \item{show}{(Cdf):  renders information about the exprSet in a concise
-      way on stdout. }
+    \item{show}{(Cdf):  renders information about the \code{Cdf}
+      object in a concise way on stdout. }
     \item{tbase}{(Cdf):  An accesor function for the
       \code{tbase} slot. }
     \item{tbase<-}{(Cdf): A replacement function for
