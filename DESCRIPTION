@@ -1,5 +1,5 @@
 Package: makecdfenv
-Version: 1.17.0
+Version: 1.17.1
 Date: 2006-03-06
 Title: CDF Environment Maker
 Author: Rafael A. Irizarry <rafa@jhu.edu>, Laurent Gautier
@@ -16,4 +16,3 @@ Description: This package has two functions. One reads a Affymetrix
 License: GPL version 2 or newer
 LazyLoad: yes
 biocViews: OneChannel, DataImport, Preprocessing
-
