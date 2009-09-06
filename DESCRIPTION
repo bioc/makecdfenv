@@ -1,5 +1,5 @@
 Package: makecdfenv
-Version: 1.23.0
+Version: 1.23.1
 Date: 2006-03-06
 Title: CDF Environment Maker
 Author: Rafael A. Irizarry <rafa@jhu.edu>, Laurent Gautier
@@ -13,6 +13,6 @@ Description: This package has two functions. One reads a Affymetrix
         environment containing the location/probe set membership
         mapping. The other creates a package that automatically loads
         that environment.
-License: GPL version 2 or newer
+License: GPL (>= 2)
 LazyLoad: yes
 biocViews: OneChannel, DataImport, Preprocessing
