@@ -41,8 +41,9 @@ alpha-numeric).
   
 In general one would want to use the name given in by
 \code{cleancdfname(abatch@cdfName)} with \code{abatch} an
-\code{\link[affy]{AffyBatch}} object obtained, for example, using
-\code{\link[affy]{ReadAffy}}. This is the package name that the
+\code{\link[affy:AffyBatch-class]{AffyBatch}} object obtained, for
+example, using \code{\link[affy:read.affybatch]{ReadAffy}}. This is the
+package name that the 
 \code{affy} package looks for by default.
 
 If the user has a CEL file, called \code{filename}, the recommended

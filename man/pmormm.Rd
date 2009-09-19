@@ -8,7 +8,7 @@
   pmormm(cdf)
 }
 \arguments{
-  \item{cdf}{A \code{\link[affy:Cdf-class]{Cdf}} object}
+  \item{cdf}{A \code{Cdf} object}
 }
 \details{
   The intensities on a chip fall in three categories: perfect match
