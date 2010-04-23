@@ -1,15 +1,17 @@
-
 useDynLib(makecdfenv)
 
-import(utils)
+import(methods)
+
+importFrom(affy, cleancdfname)
+
+importFrom(Biobase, createPackage, multiassign)
+
+importFrom(stats, runif)
+
+importFrom(utils, packageDescription)
 
 exportClasses(Cdf)
 
 exportMethods("name.levels<-", name.levels, "pbase.levels<-", pbase.levels, "pbase<-", pbase, show, "tbase.levels<-", tbase.levels, "tbase<-", tbase)
 
 export(getInfoInFile, make.cdf.env, make.cdf.package, pmormm, read.cdffile)
-
-importFrom(Biobase, multiassign, createPackage)
-
-importFrom(affy, cleancdfname)
-
