@@ -104,8 +104,8 @@ make.cdf.env <- function(filename,
   } else {
     ## Binary CDF file("ReadCDFFile",
     tmp <- .Call("ReadCDFFile",file.path(path.expand(cdf.path),filename),PACKAGE="affyio")
-    sizex <- tmp[[1]][1]
-    sizey <- tmp[[1]][2]
+    sizex <- tmp[[1]][2]  ## aka rows
+    sizey <- tmp[[1]][1]  ##aka cols
     tmp <- tmp[[2]][order(names(tmp[[2]]))]
 
     env = new.env(hash=TRUE, parent=emptyenv())
