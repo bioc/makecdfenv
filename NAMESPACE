@@ -2,6 +2,8 @@ useDynLib(makecdfenv)
 
 import(methods)
 
+import(zlibbioc)
+
 importFrom(affy, cleancdfname)
 
 importFrom(Biobase, createPackage, multiassign)
