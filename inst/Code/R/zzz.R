@@ -1,5 +1,6 @@
-.First.lib <- function(libname, pkgname){
-      path = .path.package(pkgname)
-      where <- as.environment(match(paste("package:", pkgname, sep = ""),search()))
-      data(list="@PKGNAME@", package=pkgname, envir = where)
+.onLoad <- function(libname, pkgname){
+      require("AnnotationDbi", quietly=TRUE)
+      where = asNamespace(pkgname)
+      data(list = pkgname, package = pkgname, envir = where)
+      packageStartupMessage(AnnotationDbi:::annoStartupMessages(pkgname))
 }
