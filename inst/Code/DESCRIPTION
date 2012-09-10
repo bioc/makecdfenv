@@ -6,5 +6,5 @@ Author: @AUTHOR@
 Description: A package containing an environment representing the @CDFFILENAME@ file.
 Maintainer: @MAINTAINER@
 License: LGPL
-biocViews: AnnotationData, AffymetrixChip, @PKGROOT@, @SPECIES@
+biocViews: AnnotationData, AffymetrixChip, cdf, @PKGROOT@, @SPECIES@
 Depends: utils, AnnotationDbi
