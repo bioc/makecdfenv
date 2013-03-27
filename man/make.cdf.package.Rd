@@ -13,7 +13,7 @@ make.cdf.package(filename,
   compress     = FALSE,
   author       = "The Bioconductor Project",
   maintainer   = "Biocore Data Team <biocannotation@lists.fhcrc.org>",
-  version      = packageDescription("makecdfenv", field="Version"),
+  version      = packageDescription("makecdfenv", fields ="Version"),
   species      = NULL,
   unlink       = FALSE,
   verbose      = TRUE)
