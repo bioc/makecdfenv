@@ -165,7 +165,7 @@ make.cdf.package<- function(filename,
   dimenvname <- paste(sub("cdf$", "", packagename), "dim", sep = "")
   assign(dimenvname, dimenv)
 
-  home  <- .path.package("makecdfenv")
+  home  <- path.package("makecdfenv")
   symbols = append(cdf$syms,
     list(PKGNAME     = packagename,
          VERSION     = version,
