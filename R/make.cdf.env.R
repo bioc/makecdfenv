@@ -161,7 +161,7 @@ make.cdf.package<- function(filename,
 
   ## Add small env containing nrow and ncol
   dimenv <- new.env(hash = TRUE, parent = emptyenv())
-  multiassign(c("NROW", "NCOL"), as.numeric(c(cdf$syms$SIZEX, cdf$syms$SIZEY)), dimenv)
+  multiassign(c("NCOL", "NROW"), as.numeric(c(cdf$syms$SIZEX, cdf$syms$SIZEY)), dimenv)
   dimenvname <- paste(sub("cdf$", "", packagename), "dim", sep = "")
   assign(dimenvname, dimenv)
 
