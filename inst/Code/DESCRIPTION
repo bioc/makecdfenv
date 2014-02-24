@@ -8,3 +8,4 @@ Maintainer: @MAINTAINER@
 License: LGPL
 biocViews: AnnotationData, AffymetrixChip, cdf, @PKGROOT@, @SPECIES@
 Depends: utils
+Imports: AnnotationDbi
